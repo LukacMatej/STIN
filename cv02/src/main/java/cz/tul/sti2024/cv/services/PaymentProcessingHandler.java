@@ -19,7 +19,7 @@ public class PaymentProcessingHandler {
         paymentProcessingHandler.put("CARD", cardPaymentService);
     }
 
-    public void processPayment(String payload) throws JsonProcessingException {
+    public void ProcessPayment(String payload) throws JsonProcessingException {
         Payment payment = paymentTransformations.transformJsonIntoPayment(payload);
         paymentProcessingHandler.get(payment.getPaymentType()).ProcessPayment(payment);
     }

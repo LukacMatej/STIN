@@ -28,6 +28,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="2dJVlQHlaPAgYUyzN9N1T2z0tAk" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -151,7 +154,7 @@
       <workItem from="1710329694488" duration="1282000" />
       <workItem from="1710330989283" duration="4030000" />
       <workItem from="1710335995094" duration="189000" />
-      <workItem from="1710934657595" duration="3280000" />
+      <workItem from="1710934657595" duration="4081000" />
     </task>
     <servers />
   </component>

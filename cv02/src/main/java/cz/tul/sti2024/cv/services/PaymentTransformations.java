@@ -11,13 +11,6 @@ public class PaymentTransformations {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final XmlMapper xmlMapper = new XmlMapper();
-
-    /*
-        public PaymentTransformations(ObjectMapper objectMapper, XmlMapper xmlMapper ){
-            this.objectMapper = objectMapper;
-            this.xmlMapper = xmlMapper;
-        }
-    */
     public Payment transformJsonIntoPayment(String payload) throws JsonProcessingException {
         return objectMapper.readValue(payload, Payment.class);
     }
