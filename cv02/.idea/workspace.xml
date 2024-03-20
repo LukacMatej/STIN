@@ -21,6 +21,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="ProjectId" id="2dJVlQHlaPAgYUyzN9N1T2z0tAk" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -51,6 +58,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\mates\Desktop\TUL\STIN\cv02" />
       <recent name="C:\Users\mates\Desktop\TUL\STIN\cv02\src" />
     </key>
   </component>
@@ -143,7 +151,7 @@
       <workItem from="1710329694488" duration="1282000" />
       <workItem from="1710330989283" duration="4030000" />
       <workItem from="1710335995094" duration="189000" />
-      <workItem from="1710934657595" duration="2075000" />
+      <workItem from="1710934657595" duration="3280000" />
     </task>
     <servers />
   </component>
