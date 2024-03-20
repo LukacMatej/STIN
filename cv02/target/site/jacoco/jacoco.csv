@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+cv,cz.tul.sti2024.cv.config,AppConfig,0,3,0,0,0,1,0,1,0,1
+cv,cz.tul.sti2024.cv.controller,PaymentController,6,35,0,0,1,10,1,4,1,4
+cv,cz.tul.sti2024.cv,StinApplication,5,3,0,0,2,1,1,1,1,1
+cv,cz.tul.sti2024.cv.services,PaymentTransformations,12,13,0,0,2,3,2,1,2,1
+cv,cz.tul.sti2024.cv.services,CashPaymentService,10,9,0,0,4,4,1,1,1,1
+cv,cz.tul.sti2024.cv.services,PaymentProcessingHandler,14,23,0,0,3,6,1,1,1,1
+cv,cz.tul.sti2024.cv.services,PaymentServiceProcessing,4,3,0,0,2,1,1,1,1,1
+cv,cz.tul.sti2024.cv.services,CardPaymentService,11,6,0,0,3,3,1,1,1,1
+cv,cz.tul.sti2024.cv.model,Payment,201,27,40,0,3,4,29,7,9,7
