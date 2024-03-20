@@ -1,0 +1,91 @@
+POST http://localhost:8081/pay
+Content-Type: application/json
+Content-Length: 62
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "amount": 1000,
+  "currency": "CZK",
+  "date": "1123344"
+}
+
+<> 2024-03-13T135922.500.json
+
+###
+
+POST http://localhost:8081/pay
+Content-Type: application/json
+Content-Length: 62
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "amount": 1000,
+  "currency": "CZK",
+  "date": "1123344"
+}
+
+<> 2024-03-13T135906.500.json
+
+###
+
+POST http://localhost:8081/pay?amount=1000&currency=CZK&date=1123344
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-03-13T135728.500.json
+
+###
+
+POST http://localhost:8081/pay?amount=1000&currency="CZK"&date="1123344"
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-03-13T135653.500.json
+
+###
+
+GET http://localhost:8081/time
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-03-06T135048.200.txt
+
+###
+
+GET http://localhost:8081
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-03-06T135045.200.txt
+
+###
+
+GET http://localhost:8081/time
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-03-06T134931.200.txt
+
+###
+
+POST http://localhost:8081/pay
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.6)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-03-06T134839.200.txt
+
+###
+
