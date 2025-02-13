@@ -1,3 +1,5 @@
+import django
+
 def main():
     print("Hello, World!")
 
