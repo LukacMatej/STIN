@@ -3,3 +3,4 @@ class Stock:
         self.symbol = symbol
         self.name = name
         self.price = price
+        
