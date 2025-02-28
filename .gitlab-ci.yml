@@ -1,14 +1,12 @@
 image: docker:latest
 
 stages:
-  # - lint
   - docker_rm
   - docker_build
   - publish
   - docker_stop
   - docker_copy
   - docker_run
-  # - docker_test
 
 docker_rm_local_devel:
   stage: docker_rm
@@ -93,42 +91,3 @@ docker_run_devel:
     - DOCKER_HOST=${DOCKER_HOST_2} docker restart apache-revproxy
   except:
     - tags
-# docker_run_devel:
-#   stage: docker_run
-#   image: docker:latest
-#   dependencies:
-#     - docker_build_devel
-#   script:
-#     - echo "Using docker ${DOCKER_HOST_2}"
-#     - DOCKER_HOST=${DOCKER_HOST_2} docker run --detach -p 5002:5000 --dns 192.168.200.10 --dns 192.168.200.13 --name ${CI_PROJECT_NAME}-dev netsystemcz/${CI_PROJECT_NAME}:test -e LISTEN_ADDRESS=0.0.0.0 -e HTTP_PORT=7000 -e NETBOX_IP=https://netbox-test.int.netsystem.cz -e NETBOX_KEY=22548c0c73603b896d4acfb3aecad1f5128f9d4e
-#   except:
-#     - tags
-# docker_test_devel:
-#   stage: docker_test
-#   image: docker:latest
-#   dependencies:
-#     - docker_run_devel
-#   before_script:
-#     - apk add curl
-#     - chmod +x ./test_add_update.sh
-#     - chmod +x ./test_delete.sh
-#   script:
-#     - echo "Using docker ${DOCKER_HOST_2}"
-#     - echo "Testing"
-#     - sh ./test_add_update.sh
-#     - sh ./test_delete.sh
-#   except:
-#     - tags
-
-# lint:
-#   stage: lint
-#   image: python:3.9
-#   before_script:
-#     - pip install pre-commit pylint
-#   script:
-#     - pre-commit run --all-files
-#   except:
-#     - tags
-
-
-

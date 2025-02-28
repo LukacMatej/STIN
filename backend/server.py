@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser: argparse.ArgumentParser = parserInit()
     args: argparse.Namespace = parser.parse_args()
     docker_ip: str = os.environ.get("LISTEN_ADDRESS","0.0.0.0")
-    docker_port: str = os.environ.get("HTTP_PORT",7000)
+    docker_port: str = os.environ.get("HTTP_PORT",8000)
     if not args.development:
         # production
         waitress.serve(app, host=docker_ip, port=docker_port)
