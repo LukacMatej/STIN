@@ -7,7 +7,7 @@ RUN apt update && apt install -y \
 COPY requirements.txt /
 RUN pip3 install -r requirements.txt 
 
-WORKDIR /backend
+WORKDIR /
 ADD app/ /app
 ADD server.py /
 
