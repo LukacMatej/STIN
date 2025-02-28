@@ -1,0 +1,34 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - "/backend-data/:/app"
+    ports:
+      - "8000:8080"
+    networks:
+      space:
+        ipv4_address: 192.168.92.5
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:4200"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     space:
+  #       ipv4_address: 192.168.92.4
+
+networks:
+  space:
+    ipam:
+      config:
+        - subnet: "192.168.92.0/24"
+
+volumes:
+  backend-data:

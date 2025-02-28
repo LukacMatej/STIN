@@ -4,13 +4,10 @@ from google.genai.types import GenerateContentResponse
 import waitress
 import sys
 import os
-import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.stock.service import stock_service as ss
 from app.genai.service import genai_service as gs
-import time
-from google.genai.errors import ClientError
 
 app = flask.Flask(__name__)
 
@@ -19,10 +16,9 @@ def index():
     return 'Hello, Flask!'
 
 @app.route('/getStock')
-def getStock():
-    finnhub_api_key = os.environ.get('FINNHUB_API_KEY','cuuudb9r01qpi6rs7eg0cuuudb9r01qpi6rs7egg')
-    genai_api_key = os.environ.get('GEN_AI_KEY','AIzaSyCXhf0yGZX_l1VSkCLoYfL89yNaI-ARbrg')
-    
+def getStockNews():
+    finnhub_api_key: str = os.environ.get('FINNHUB_API_KEY')
+    genai_api_key: str = os.environ.get('GEN_AI_KEY')
     genai_client = gs.genaiClient(genai_api_key)
     client = ss.FinnhubClient(finnhub_api_key)
     stocks = client.getGeneralNews("general")
