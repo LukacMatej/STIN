@@ -31,15 +31,30 @@ def getStockNews():
     return flask.jsonify(evaluated_stocks)
     
 
-def argParse() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description='A simple Flask application.')
-    parser.add_argument('--debug', action='store_true', help='Run the application in debug mode.')
-    args: argparse.Namespace = parser.parse_args()
-    return args
+def parserInit() -> argparse.Namespace:
+    """
+    Initialize the argument parser for the server.
 
-if __name__ == '__main__':
-    args: argparse.Namespace = argParse()
-    if args.debug:
-        app.run(debug=True)
+    Returns:
+        argparse.ArgumentParser: The argument parser object.
+    """
+    argparser = argparse.ArgumentParser(description="Turn on/off production.")
+    argparser.add_argument(
+        "-d", "--development", help="Turn on development server", action="store_true"
+    )
+    argparser.add_argument(
+        "-debug", "--debug", help="Turn on debug mode", action="store_true"
+    )
+    return argparser
+
+if __name__ == "__main__":
+    parser: argparse.ArgumentParser = parserInit()
+    args: argparse.Namespace = parser.parse_args()
+    docker_ip: str = os.environ.get("LISTEN_ADDRESS","0.0.0.0")
+    docker_port: str = os.environ.get("HTTP_PORT",7000)
+    if not args.development:
+        # production
+        waitress.serve(app, host=docker_ip, port=docker_port)
     else:
-        waitress.serve(app, port=5000)
+        # development
+        app.run(debug=True, host=docker_ip, port=docker_port)
