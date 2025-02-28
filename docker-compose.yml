@@ -6,6 +6,11 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "/backend-data/:/app"
+    environment:
+      - LISTEN_ADDRESS=${LISTEN_ADDRESS}
+      - HTTP_PORT=${HTTP_PORT}
+      - GEN_AI_KEY=${GEN_AI_KEY}
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY}
     ports:
       - "8000:8000"
     networks:
