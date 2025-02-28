@@ -1,0 +1,34 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - LISTEN_ADDRESS=${LISTEN_ADDRESS}
+      - HTTP_PORT=${HTTP_PORT}
+      - GEN_AI_KEY=${GEN_AI_KEY}
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY}
+    ports:
+      - "8000:8000"
+    networks:
+      space:
+        ipv4_address: 192.168.92.5
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:4200"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     space:
+  #       ipv4_address: 192.168.92.4
+
+networks:
+  space:
+    ipam:
+      config:
+        - subnet: "192.168.92.0/24"
