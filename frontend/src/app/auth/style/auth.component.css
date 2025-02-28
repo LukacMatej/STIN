@@ -1,0 +1,22 @@
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding-top: 4rem;
+}
+
+.auth-wrapper {
+  width: 40%;
+}
+
+.signup_div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+mat-card {
+  padding: 20px;
+}

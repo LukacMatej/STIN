@@ -1,0 +1,51 @@
+<div class="filter-wrapper">
+  <div class="filter-row">
+    <div *ngFor="let column of columns">
+      <div *ngIf="column.type === 'string'" class="filter-item">
+        <mat-form-field>
+          <input [(ngModel)]="column.filterCriteria.value" matInput placeholder="{{column.placeholder | translate}}">
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="column.type === 'date'" class="filter-item">
+        <mat-form-field>
+          <mat-datepicker-toggle [for]="picker" matIconSuffix></mat-datepicker-toggle>
+          <input [(ngModel)]="column.filterCriteria.value" [matDatepicker]="picker" matInput
+                 placeholder="{{column.placeholder | translate}}">
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="isEnumColumnType(column.type) && column.type.multi" class="filter-item">
+        <mat-form-field>
+          <mat-select [(ngModel)]="column.filterCriteria.value" multiple
+                      placeholder="{{column.placeholder | translate}}">
+            <mat-option *ngFor="let key of column.type.keys" [value]="key">
+              {{ column.type.values[column.type.keys.indexOf(key)] | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="isEnumColumnType(column.type) && !column.type.multi" class="filter-item">
+        <mat-form-field>
+          <mat-select [(ngModel)]="column.filterCriteria.value"
+                      placeholder="{{column.placeholder | translate}}">
+            <mat-option *ngFor="let key of column.type.keys; let i = index" [value]="key">
+              {{ column.type.values[i] | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button (click)="applyFilters()" class="info-button" mat-raised-button>
+        {{"APPLY_FILTER" | translate}}
+      </button>
+      <button (click)="clearFilters()" class="warn-button" mat-raised-button>
+        {{"CLEAR_FILTER" | translate}}
+      </button>
+    </div>
+  </div>
+</div>

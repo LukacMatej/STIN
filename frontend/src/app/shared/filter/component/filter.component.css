@@ -1,0 +1,50 @@
+:host ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: var(--primary-background-color-light);
+}
+
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+  height: 0;
+}
+
+:host ::ng-deep div .mat-mdc-select-panel {
+  background-color: var(--primary-background-color-light);
+}
+
+.filter-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.filter-item {
+  flex: 1 1 200px;
+  max-width: 300px;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}

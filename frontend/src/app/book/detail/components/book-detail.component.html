@@ -1,0 +1,136 @@
+<div *ngIf="book() as book" class="book-detail-container">
+
+  <!--Book detail section-->
+  <mat-card appearance="outlined" class="card-wrapper">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title class="book-detail-title">
+          {{book.title}}
+          <button (click)="onSubmitBookFavorite()" *ngIf="isUserSignedIn()" mat-icon-button>
+            <mat-icon *ngIf="isBookFavorite(); else addFavorite">favorite</mat-icon>
+            <ng-template #addFavorite>
+              <mat-icon>favorite_border</mat-icon>
+            </ng-template>
+          </button>
+        </mat-card-title>
+        <mat-card-subtitle>{{ book.subtitle }}</mat-card-subtitle>
+
+        <mat-card-subtitle>
+          {{ 'AUTHORS' | translate }}:
+          <span class="inline-list">
+            <span *ngFor="let author of book.authors; let last = last">
+              {{ author.name }}
+              <ng-container *ngIf="!last">, </ng-container>
+            </span>
+          </span>
+        </mat-card-subtitle>
+
+        <mat-card-subtitle>
+          {{ 'CATEGORIES' | translate }}:
+          <span class="inline-list">
+            <span *ngFor="let category of book.categories; let last = last">
+              {{ category.name }}
+              <ng-container *ngIf="!last">, </ng-container>
+            </span>
+          </span>
+        </mat-card-subtitle>
+
+        <mat-card-subtitle>ISBN-13: {{ book.isbn13 }}</mat-card-subtitle>
+        <mat-card-subtitle>ISBN-10: {{ book.isbn10 }}</mat-card-subtitle>
+        <mat-card-subtitle>{{ 'PUBLISHED_YEAR' | translate }}: {{ book.publishedYear }}</mat-card-subtitle>
+        <mat-card-subtitle>{{ 'PAGES' | translate }}: {{ book.numPages }}</mat-card-subtitle>
+        <mat-card-subtitle>
+          {{ 'AVERAGE_RATING' | translate }}: {{ book.averageRating }} ({{ book.ratingsCount }} ratings)
+        </mat-card-subtitle>
+
+        <mat-card-subtitle>{{ 'PRICE' | translate }}: {{book.price}}</mat-card-subtitle>
+      </mat-card-title-group>
+
+      <img [src]="book.thumbnail || 'assets/img/empty.avif'" alt="{{book.title}}" mat-card-xl-image>
+    </mat-card-header>
+
+    <mat-card-content class="book-card-gap">
+      <p>{{book.description}}</p>
+    </mat-card-content>
+
+    <!--Change book's ratting -->
+    <div *ngIf="isUserSignedIn()">
+      <mat-card-actions>
+        <button (click)="ratingInput.set(i+1)" *ngFor="let _ of [0, 1, 2, 3, 4]; index as i" [id]="'star_'+i"
+                [ngClass]="{'active-star': i < ratingInput()}" mat-icon-button>
+          <mat-icon>
+            {{ showBookIcons(i) }}
+          </mat-icon>
+        </button>
+
+        <button (click)="onAddBookRating()" [disabled]="book?.disabled === true" class="info-button-without-background"
+                mat-button>
+          <mat-icon>add_icon</mat-icon>
+          {{ 'SUBMIT_RATING' | translate }}
+        </button>
+        <button (click)="onDeleteBookRating()" [disabled]="book?.disabled === true"
+                class="info-button-without-background"
+                mat-button>
+          <mat-icon>remove_icon</mat-icon>
+          {{ 'DELETE_RATING' | translate }}
+        </button>
+      </mat-card-actions>
+    </div>
+
+    <!--Add book to cart -->
+    <div *ngIf="isUserSignedIn() && book?.disabled !== true">
+      <mat-card-content>
+        <p>{{"COUNT_IN_CART" | translate}}: {{this.bookQuantity}}</p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button (click)="onAddBookToCart($event)" class="info-button-without-background" mat-button>
+          <mat-icon>add_shopping_cart</mat-icon>
+          {{"ADD_TO_CART" | translate}}
+        </button>
+        <button (click)="onRemoveBookFromCart($event)" class="info-button-without-background" mat-button>
+          <mat-icon>remove_shopping_cart</mat-icon>
+          {{"REMOVE_FROM_CART" | translate}}
+        </button>
+      </mat-card-actions>
+    </div>
+  </mat-card>
+
+
+  <!--Comments section-->
+  <mat-card appearance="outlined" class="card-wrapper">
+
+    <mat-card-title>{{ 'COMMENTS' | translate }}</mat-card-title>
+
+    <mat-card-content *ngIf="isUserSignedIn() && book?.disabled !== true" class="book-card-gap comment-wrapper">
+      <mat-form-field [style.fontSize]="14">
+        <textarea [(ngModel)]="commentInput"
+                  cdkAutosizeMaxRows="5"
+                  cdkAutosizeMinRows="1"
+                  cdkTextareaAutosize
+                  class="comment-text-area"
+                  matInput
+                  placeholder="{{ 'Type your comment here...' | translate }}">
+        </textarea>
+      </mat-form-field>
+
+      <button (click)="onSubmitComment()" [disabled]="commentInput().length <=0 || book?.disabled === true"
+              class="info-button-without-background"
+              mat-button type="submit">
+        {{ 'SUBMIT_COMMENT' | translate }}
+      </button>
+    </mat-card-content>
+
+    <mat-card-content *ngIf="book.bookComments?.length || book.disabled">
+      <ul>
+        <li *ngFor="let comment of book.bookComments | orderBy: 'createdDateTime':true" class="comment-item">
+          <div class="comment-header">
+            <p><strong>{{ comment.user }}</strong></p>
+            <p class="comment-date">{{ moment(comment.createdDateTime).format('DD.MM.YYYY HH:mm') }}</p>
+          </div>
+          <p>{{ comment.comment }}</p>
+        </li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+</div>

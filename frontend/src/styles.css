@@ -1,0 +1,56 @@
+html, body {
+  height: 100%;
+}
+
+:root {
+  --primary-background-color-light: #101414;
+  --secondary-background-color-light: #6d7bec;
+  --primary-color-light: white;
+  --info-color-light: #6d7bec;
+  --warn-color-light: #ff8374;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.info-button * {
+  background-color: var(--primary-background-color-light);
+  color: var(--info-color-light);
+}
+
+.info-button:hover * {
+  background-color: var(--primary-color-light);
+  color: var(--info-color-light);
+  transition: 0.5s;
+}
+
+.warn-button * {
+  background-color: var(--primary-background-color-light);
+  color: var(--warn-color-light);
+}
+
+.warn-button:hover * {
+  background-color: var(--primary-color-light);
+  color: var(--warn-color-light);
+  transition: 0.5s;
+}
+
+.info-button-without-background * {
+  color: var(--info-color-light);
+}
+
+.info-button-without-background:hover * {
+  color: var(--primary-color-light);
+}
+
+.warn-button-without-background * {
+  color: var(--warn-color-light);
+}
+
+.inline-list {
+  display: inline-block;
+  white-space: normal;
+  word-wrap: break-word;
+}

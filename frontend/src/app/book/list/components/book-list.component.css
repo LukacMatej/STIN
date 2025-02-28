@@ -1,0 +1,28 @@
+.book-grid-list {
+  margin: 0 1rem;
+}
+
+.book-list-card-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.book-list-card-wrapper * {
+  color: var(--primary-color-light);
+}
+
+.book-card-description {
+  margin: 1rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.paginator-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}

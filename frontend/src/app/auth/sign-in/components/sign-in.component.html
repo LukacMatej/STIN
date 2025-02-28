@@ -1,0 +1,24 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+  <div class="auth-wrapper">
+    <mat-card>
+
+      <mat-form-field>
+        <mat-icon matPrefix>alternate_email</mat-icon>
+        <input [formControl]="formGroup.controls.email" matInput placeholder='{{"EMAIL" | translate}}' type="text">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input [formControl]="formGroup.controls.password" matInput placeholder='{{"PASSWORD" | translate}}'
+               type="password">
+      </mat-form-field>
+
+      <mat-checkbox [formControl]="formGroup.controls.rememberMe">{{"REMEMBER_ME" | translate}}</mat-checkbox>
+
+      <button class="info-button-without-background" mat-raised-button
+              type="submit">{{"SIGN_IN" | translate}}</button>
+      <button (click)="openSignUpForm()" class="info-button-without-background" mat-raised-button
+              type="button">{{"SIGN_UP" | translate}}</button>
+    </mat-card>
+  </div>
+</form>

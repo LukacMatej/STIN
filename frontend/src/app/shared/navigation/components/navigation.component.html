@@ -1,0 +1,57 @@
+<mat-toolbar class="menu">
+  <a [routerLink]="'/'">
+    <li [class.selected]="isSelected('/')" class="page-body-text">
+      <mat-icon>home</mat-icon>
+    </li>
+  </a>
+
+  <a *ngIf="isUserSignedIn()" [routerLink]="'/favorite'">
+    <li [class.selected]="isSelected('/favorite')" class="page-body-text">
+      <span>{{'FAVORITE' | translate}}</span>
+    </li>
+  </a>
+
+  <a *ngIf="isUserSignedIn()" [routerLink]="'/person-info'">
+    <li [class.selected]="isSelected('/person-info')" class="page-body-text">
+      <span>{{'PROFILE' | translate}}</span>
+    </li>
+  </a>
+
+  <a *ngIf="isUserSignedIn()" [routerLink]="'/cart'">
+    <li [class.selected]="isSelected('/cart')" class="page-body-text">
+      <span>{{'CART' | translate}}</span>
+    </li>
+  </a>
+
+  <a *ngIf="isUserSignedIn()" [routerLink]="'/order'">
+    <li [class.selected]="isSelected('/order')" class="page-body-text">
+      <span>{{'ORDERS' | translate}}</span>
+    </li>
+  </a>
+
+  <span class="fill-space"></span>
+
+  <span>{{authUser()?.firstName}} {{authUser()?.lastName}}</span>
+
+  <span class="fill-space"></span>
+
+  <mat-slide-toggle (change)="changeLang($event.checked)" labelPosition="before">{{lang}}</mat-slide-toggle>
+
+  <a *ngIf="!isUserSignedIn()" [routerLink]="'/sign-in'">
+    <li [class.selected]="isSelected('/sign-in')" class="page-body-text">
+      <span>{{'SIGN_IN' | translate}}</span>
+    </li>
+  </a>
+
+  <a *ngIf="!isUserSignedIn()" [routerLink]="'/sign-up'">
+    <li [class.selected]="isSelected('/sign-up')" class="page-body-text">
+      <span>{{'SIGN_UP' | translate}}</span>
+    </li>
+  </a>
+
+  <a (click)="signOut()" (keydown.enter)="signOut()" *ngIf="isUserSignedIn()" tabindex="0">
+    <li class="page-body-text">
+      <span>{{'SIGN_OUT' | translate}}</span>
+    </li>
+  </a>
+</mat-toolbar>

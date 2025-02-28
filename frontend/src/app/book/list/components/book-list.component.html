@@ -1,0 +1,57 @@
+<div #box class="book-list-container" id="box">
+  <app-filter (filter)="filterBooksWithColumnDef($event)"
+              [columns]="columns()">
+  </app-filter>
+
+  <mat-grid-list (window:resize)="onBoxResize()" [cols]="maxColumns" [gutterSize]="'1rem'"
+                 class="book-grid-list"
+                 rowHeight="{{isUserSignedIn() ? 350 : 280}}px" width="100%">
+    <mat-grid-tile (click)="goToBookDetail(book.id)" *ngFor="let book of books()?.content">
+
+      <mat-card appearance="outlined" class="book-list-card-wrapper">
+        <mat-card-header>
+          <mat-card-title-group>
+            <mat-card-title>{{book.title}}</mat-card-title>
+            <mat-card-subtitle>{{book.authors.join(", ")}}</mat-card-subtitle>
+            <mat-card-subtitle>{{book.categories.join(", ")}}</mat-card-subtitle>
+            <mat-card-subtitle>ISBN-13: {{ book.isbn13 }}</mat-card-subtitle>
+            <mat-card-subtitle>{{ 'PRICE' | translate }}: {{book.price}}</mat-card-subtitle>
+            <img [src]="book.thumbnail || 'assets/img/empty.avif'" alt="{{book.title}}" mat-card-lg-image>
+          </mat-card-title-group>
+        </mat-card-header>
+
+
+        <mat-card-content class="book-card-description">
+          <p>{{book.description}}</p>
+        </mat-card-content>
+
+        <mat-card-content *ngIf="isUserSignedIn() && !book.disabled">
+          <p>{{"COUNT_IN_CART" | translate}}: {{getSessionCartQuantityByBookId(book.id)}}</p>
+        </mat-card-content>
+
+        <mat-card-actions *ngIf="isUserSignedIn() && !book.disabled">
+          <button (click)="onAddBookToCart($event, book.id)" class="info-button-without-background" mat-raised-button>
+            <mat-icon>add_shopping_cart</mat-icon>
+            {{"ADD_TO_CART" | translate}}
+          </button>
+          <button (click)="onRemoveBookFromCart($event, book.id)" class="info-button-without-background"
+                  mat-raised-button>
+            <mat-icon>remove_shopping_cart</mat-icon>
+            {{"REMOVE_FROM_CART" | translate}}
+          </button>
+        </mat-card-actions>
+
+      </mat-card>
+
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <mat-paginator (page)="onChangePage($event)"
+                 [length]="(books()?.totalPages || 0) * bookFilter.size"
+                 [pageIndex]="(books()?.page || 0) - 1"
+                 [pageSizeOptions]="[maxColumns*3, maxColumns*9, maxColumns*30]"
+                 aria-label="Select page"
+                 class="paginator-body">
+  </mat-paginator>
+</div>
+

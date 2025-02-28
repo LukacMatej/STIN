@@ -1,0 +1,28 @@
+.paginator-body {
+  margin-top: auto;
+}
+
+table {
+  width: 100%;
+}
+
+tr.order-detail-row {
+  height: 0;
+}
+
+tr.order-element-row:not(.example-expanded-row):hover {
+  background: #252323;
+}
+
+tr.order-element-row:not(.example-expanded-row):active {
+  background: #252323;
+}
+
+.order-element-row td {
+  border-bottom-width: 0;
+}
+
+.order-element-detail {
+  overflow: hidden;
+  display: flex;
+}

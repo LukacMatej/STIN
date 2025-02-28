@@ -1,0 +1,22 @@
+:host ::ng-deep .cart-main-stepper .mat-step-icon-selected,
+:host ::ng-deep .cart-main-stepper .mat-step-icon-state-edit,
+:host ::ng-deep .cart-main-stepper .mat-step-icon-state-done {
+  background-color: var(--secondary-background-color-light);
+}
+
+:host ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: var(--primary-background-color-light);
+  border: 1px solid var(--primary-color-light);
+}
+
+:host ::ng-deep div .mat-mdc-select-panel {
+  background-color: var(--primary-background-color-light);
+}
+
+.cart-main-stepper * {
+  color: var(--primary-color-light);
+}
+
+.cart-price-table {
+  padding: 2rem 0;
+}

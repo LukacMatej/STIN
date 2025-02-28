@@ -1,0 +1,84 @@
+<div>
+  <app-filter (filter)="filterBooksWithColumnDef($event)"
+              [columns]="columns()">
+  </app-filter>
+
+  <table *ngIf="orders() !== null" [dataSource]="orders()!.content" mat-table multiTemplateDataRows>
+
+    <ng-container matColumnDef="id">
+      <th *matHeaderCellDef mat-header-cell>{{ 'ORDER_NUMBER' | translate }}</th>
+      <td *matCellDef="let element" mat-cell> {{element.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="paymentMethod">
+      <th *matHeaderCellDef mat-header-cell>{{ 'PAYMENT_METHOD' | translate }}</th>
+      <td *matCellDef="let element" mat-cell> {{ element.paymentMethod | translate }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalPrice">
+      <th *matHeaderCellDef mat-header-cell>{{ 'TOTAL_PRICE' | translate }}</th>
+      <td *matCellDef="let element" mat-cell> {{element.totalPrice}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdDateTime">
+      <th *matHeaderCellDef mat-header-cell>{{ 'ORDER_DATE' | translate }}</th>
+      <td *matCellDef="let element" mat-cell>{{moment(element.createdDateTime).format('DD.MM.YYYY HH:mm')}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="expand">
+      <th *matHeaderCellDef aria-label="row actions" mat-header-cell>&nbsp;</th>
+      <td *matCellDef="let element" mat-cell>
+        <button (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()"
+                aria-label="expand row"
+                mat-icon-button>
+          <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+          <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expandedDetail">
+      <td *matCellDef="let order" [attr.colspan]="orderColumnsToDisplayWithExpand.length" mat-cell>
+        <div [@detailExpand]="order === expandedElement ? 'expanded' : 'collapsed'"
+             class="order-detail-row">
+          <table [dataSource]="order.carItems" mat-table>
+            <ng-container matColumnDef="bookName">
+              <th *matHeaderCellDef mat-header-cell>{{ 'TITLE' | translate }}</th>
+              <td *matCellDef="let orderItem" mat-cell> {{orderItem.bookName}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th *matHeaderCellDef mat-header-cell>{{ 'QUANTITY' | translate }}</th>
+              <td *matCellDef="let orderItem" mat-cell> {{orderItem.quantity}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+              <th *matHeaderCellDef mat-header-cell>{{ 'PRICE' | translate }}</th>
+              <td *matCellDef="let orderItem" mat-cell> {{orderItem.price}} </td>
+            </ng-container>
+
+            <tr *matHeaderRowDef="orderItemColumnsToDisplay" mat-header-row></tr>
+            <tr *matRowDef="let row; columns: orderItemColumnsToDisplay;" mat-row></tr>
+          </table>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr *matHeaderRowDef="orderColumnsToDisplayWithExpand" mat-header-row></tr>
+    <tr (click)="expandedElement = expandedElement === element ? null : element"
+        *matRowDef="let element; columns: orderColumnsToDisplayWithExpand;"
+        [class.example-expanded-row]="expandedElement === element"
+        class="order-element-row"
+        mat-row>
+    </tr>
+    <tr *matRowDef="let row; columns: ['expandedDetail']" class="order-detail-row" mat-row></tr>
+  </table>
+
+  <mat-paginator (page)="onChangePage($event)"
+                 [length]="(orders()?.totalPages || 0) * orderFilter.size"
+                 [pageIndex]="(orders()?.page || 0) - 1"
+                 [pageSizeOptions]="[12, 36, 120]"
+                 aria-label="Select page"
+                 class="paginator-body">
+  </mat-paginator>
+</div>

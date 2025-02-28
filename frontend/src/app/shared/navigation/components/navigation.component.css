@@ -1,0 +1,25 @@
+.page-body-text {
+  font-size: 1rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  color: var(--primary-color-light);
+}
+
+.page-body-text.selected {
+  font-weight: bolder;
+  color: var(--info-color-light);
+}
+
+li {
+  list-style-type: none;
+  cursor: pointer;
+  display: flex;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color-light);
+}
+
+.fill-space {
+  flex: 1;
+}

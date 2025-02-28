@@ -1,0 +1,156 @@
+<mat-stepper #stepper class="cart-main-stepper" linear>
+
+  <!-- Zavolat si filter knih kde bude filterCriteria.IN a pole id. Vrací stejný objekt jak v book listu -->
+  <mat-step>
+    <ng-template matStepLabel>{{ 'CART' | translate }}</ng-template>
+    <table [dataSource]="cartSessionItemViews()" class="cart-price-table" mat-table>
+      <ng-container matColumnDef="title">
+        <th *matHeaderCellDef mat-header-cell>{{ 'TITLE' | translate }}</th>
+        <td *matCellDef="let element" mat-cell> {{element.title}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th *matHeaderCellDef mat-header-cell>{{ 'PRICE' | translate }}</th>
+        <td *matCellDef="let element" mat-cell> {{element.price}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="quantity">
+        <th *matHeaderCellDef mat-header-cell>{{ 'QUANTITY' | translate }}</th>
+        <td *matCellDef="let element" mat-cell>
+          <mat-form-field appearance="fill" class="quantity-input">
+            <mat-label>{{ 'QUANTITY' | translate }}</mat-label>
+            <input (ngModelChange)="calculateTotalPrice()" [(ngModel)]="element.quantity" matInput min="1"
+                   type="number"/>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalPrice">
+        <th *matHeaderCellDef mat-header-cell>{{ 'TOTAL_PRICE' | translate }}</th>
+        <td *matCellDef="let element" mat-cell> {{element.quantity * element.price}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="remove">
+        <th *matHeaderCellDef mat-header-cell>{{ 'REMOVE_FROM_CART' | translate }}</th>
+        <td *matCellDef="let element" mat-cell>
+          <button (click)="onRemoveBookFromCart(element.bookId)" class="info-button-without-background"
+                  mat-raised-button>
+            <mat-icon>remove_shopping_cart</mat-icon>
+            {{"REMOVE_FROM_CART" | translate}}
+          </button>
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="introStepDisplayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: introStepDisplayedColumns;" mat-row></tr>
+    </table>
+    <button class="info-button-without-background" mat-button matStepperNext>
+      {{'NEXT' | translate}}
+    </button>
+  </mat-step>
+
+  <!-- Přidat formulář pro údaje o uživateli vše je povinné (kromě asi favoriteCategories)-->
+  <mat-step>
+    <ng-template matStepLabel>{{ 'personal_information' | translate }}</ng-template>
+    <app-person-info (dataSubmittedEvent)="getPersonInfo(stepper)" [useValidators]="true"></app-person-info>
+    <button class="info-button-without-background" mat-button matStepperPrevious>
+      {{'PREVIOUS' | translate}}
+    </button>
+    <button class="info-button-without-background" mat-button matStepperNext>
+      {{'NEXT' | translate}}
+    </button>
+  </mat-step>
+
+  <!-- Přidat přehled asi deatail košíku a detail uživatele -->
+  <mat-step [editable]="false">
+    <ng-template matStepLabel>{{ 'CART_SUBMIT_TITLE' | translate }}</ng-template>
+
+    <form [formGroup]="formGroup">
+      <mat-card>
+        <mat-card-title style="padding-bottom: 1rem">{{ 'PAYMENT_CONFIRMATION' | translate }}</mat-card-title>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'EMAIL' | translate }}</mat-label>
+          <input [formControl]="formGroup.controls.email" matInput type="text">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PAYMENT_METHOD' | translate }}</mat-label>
+          <mat-select (selectionChange)="calculateTotalPrice()" [formControl]="formGroup.controls.paymentMethod">
+            <mat-option value="{{paymentMethodEnum.CARD}}">{{ 'CARD' | translate }}</mat-option>
+            <mat-option value="{{paymentMethodEnum.BANK_TRANSFER}}">{{ 'BANK_TRANSFER' | translate }}</mat-option>
+            <mat-option value="{{paymentMethodEnum.CASH}}">{{ 'CASH' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-card>
+          <mat-card-title>{{ 'billing_address' | translate }}</mat-card-title>
+          <mat-card-content>
+            <mat-card-subtitle>
+              {{ 'country' | translate }}: {{personInfoAddress?.country}}
+            </mat-card-subtitle>
+
+            <mat-card-subtitle>
+              <mat-label>{{ 'city' | translate }}: {{personInfoAddress?.city}}</mat-label>
+            </mat-card-subtitle>
+
+            <mat-card-subtitle>
+              <mat-label>{{ 'street' | translate }}: {{personInfoAddress?.street}}</mat-label>
+            </mat-card-subtitle>
+
+            <mat-card-subtitle>
+              <mat-label>{{ 'house_number' | translate }}: {{personInfoAddress?.houseNumber}}</mat-label>
+            </mat-card-subtitle>
+
+            <mat-card-subtitle>
+              <mat-label>{{ 'zip_code' | translate }}: {{personInfoAddress?.zipCode}}</mat-label>
+            </mat-card-subtitle>
+
+          </mat-card-content>
+        </mat-card>
+
+
+        <table [dataSource]="cartSessionItemViews()" class="cart-price-table" mat-table>
+          <ng-container matColumnDef="title">
+            <th *matHeaderCellDef mat-header-cell>{{ 'TITLE' | translate }}</th>
+            <td *matCellDef="let element" mat-cell> {{element.title}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="price">
+            <th *matHeaderCellDef mat-header-cell>{{ 'PRICE' | translate }}</th>
+            <td *matCellDef="let element" mat-cell> {{element.price}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="quantity">
+            <th *matHeaderCellDef mat-header-cell>{{ 'QUANTITY' | translate }}</th>
+            <td *matCellDef="let element" mat-cell> {{element.quantity}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalPrice">
+            <th *matHeaderCellDef mat-header-cell>{{ 'TOTAL_PRICE' | translate }}</th>
+            <td *matCellDef="let element" mat-cell> {{element.quantity * element.price}} </td>
+          </ng-container>
+
+          <tr *matHeaderRowDef="confirmationStepDisplayedColumns" mat-header-row></tr>
+          <tr *matRowDef="let row; columns: confirmationStepDisplayedColumns;" mat-row></tr>
+        </table>
+
+        <mat-card-content>
+          <p>{{'FEE' | translate}}: {{ this.booksTotalPrice - this.booksPrice }}Kč</p>
+          <p>{{ 'TOTAL_PRICE' | translate }}: {{this.booksTotalPrice }}Kč</p>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button (click)="onSubmit()" class="info-button-without-background" mat-raised-button>
+            {{ 'CONFIRM_PAYMENT' | translate }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+
+    <button class="info-button-without-background" mat-button matStepperPrevious>
+      {{'PREVIOUS' | translate}}
+    </button>
+  </mat-step>
+
+</mat-stepper>
