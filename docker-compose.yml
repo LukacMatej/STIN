@@ -15,17 +15,17 @@ services:
       space:
         ipv4_address: 192.168.92.5
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:4200"
-  #   depends_on:
-  #     - backend
-  #   networks:
-  #     space:
-  #       ipv4_address: 192.168.92.4
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      space:
+        ipv4_address: 192.168.92.4
 
 networks:
   space:

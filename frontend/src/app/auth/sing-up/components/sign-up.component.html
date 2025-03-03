@@ -1,0 +1,67 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+  <div class="auth-wrapper">
+    <mat-card>
+
+      <!-- First Name -->
+      <mat-form-field>
+        <mat-label>{{"FIRST_NAME" | translate}}</mat-label>
+        <input [formControl]="formGroup.controls.firstName" matInput
+               placeholder='{{"ENTER_FIRST_NAME" | translate}}' type="text">
+        <mat-error *ngIf="formGroup.controls.firstName.hasError('required')">
+          {{"FIRST_NAME_ERROR" | translate}}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Last Name -->
+      <mat-form-field>
+        <mat-label>{{"LAST_NAME" | translate}}</mat-label>
+        <input [formControl]="formGroup.controls.lastName" matInput placeholder='{{"ENTER_LAST_NAME" | translate}}'
+               type="text">
+        <mat-error *ngIf="formGroup.controls.lastName.hasError('required')">
+          {{"LAST_NAME_ERROR" | translate}}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field>
+        <mat-label>{{"EMAIL" | translate}}</mat-label>
+        <mat-icon matPrefix>alternate_email</mat-icon>
+        <input [formControl]="formGroup.controls.email" matInput placeholder='{{"ENTER_EMAIL" | translate}}'
+               type="email">
+        <mat-error *ngIf="formGroup.controls.email.hasError('required')">
+          {{"EMAIL_ERROR" | translate}}
+        </mat-error>
+        <mat-error *ngIf="formGroup.controls.email.hasError('email')">
+          {{"EMAIL_VALID_ERROR" | translate}}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field>
+        <mat-label>{{"PASSWORD" | translate}}</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input [formControl]="formGroup.controls.password" matInput placeholder='{{"PASSWORD_ENTER" | translate}}'
+               type="password">
+        <mat-error *ngIf="formGroup.controls.password.hasError('required')">
+          {{"PASSWORD_REQ" | translate}}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Confirm Password -->
+      <mat-form-field>
+        <mat-label>{{"CONF_PASSWORD" | translate}}</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input [formControl]="formGroup.controls.secondPassword" matInput
+               placeholder='{{"CONF_PASSWORD_ENTER" | translate}}'
+               type="password">
+        <mat-error *ngIf="formGroup.controls.secondPassword.hasError('required')">
+          {{"CONF_PASSWORD_REQ" | translate}}
+        </mat-error>
+      </mat-form-field>
+
+      <button class="info-button-without-background" mat-raised-button type="submit">{{"SIGN_UP" | translate}}</button>
+      <button (click)="openSignInForm()" class="info-button-without-background" mat-raised-button
+              type="button">{{"SIGN_IN" | translate}}</button>
+    </mat-card>
+  </div>
+</form>
