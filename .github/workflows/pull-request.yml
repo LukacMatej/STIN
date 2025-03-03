@@ -1,0 +1,67 @@
+name: STIN - Build backend and frontend on pull request
+
+on:
+  push:
+    branches: 
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}-pull-request"
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build and test backend & frontend
+    runs-on: ubuntu-latest
+    env:
+      LISTEN_ADDRESS: "0.0.0.0"
+      HTTP_PORT: "8000"
+      GEN_AI_KEY: ${{ secrets.GEN_AI_KEY }}
+      FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          docker-compose up -d
+          docker ps
+
+      - name: Run backend tests
+        run: |
+          docker-compose exec -T backend pytest --cov=app --cov-report=xml
+
+      - name: Copy backend coverage report
+        run: |
+          docker cp backend:/coverage.xml backend/
+
+      - name: Upload backend coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: backend
+          files: backend/coverage.xml
+
+      - name: Run frontend tests
+        run: |
+          docker-compose exec -T frontend npm run test -- --coverage --coverageReporters=cobertura
+
+      - name: Copy frontend coverage report
+        run: |
+          docker cp frontend:/frontend/coverage/cobertura-coverage.xml frontend/
+
+      - name: Upload frontend coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: frontend
+          files: frontend/coverage/cobertura-coverage.xml
+
+      - name: Shut down Docker Compose
+        run: docker-compose down
