@@ -17,24 +17,6 @@
         <mat-datepicker #birthDatePicker></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field>
-        <mat-select [formControl]="formGroup.controls.favoriteCategories" multiple
-                    placeholder="{{ 'favorite_category' | translate }}">
-          <mat-option *ngFor="let value of bookCategories" [value]="value.name">
-            {{ value.name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'reference_source' | translate }}</mat-label>
-        <input [formControl]="formGroup.controls.referenceSource" matInput type="text">
-      </mat-form-field>
-
-      <mat-checkbox [formControl]="formGroup.controls.processingConsent">
-        {{ 'processing_consent' | translate }}
-      </mat-checkbox>
-
       <mat-card-actions>
         <button (click)="onSubmit()" class="info-button-without-background" mat-raised-button>
           {{ 'save' | translate }}
@@ -42,76 +24,4 @@
       </mat-card-actions>
     </mat-card-content>
   </mat-card>
-
-  <form [formGroup]="personalAddressFormGroup">
-    <mat-card>
-      <mat-card-title>{{ 'personal_address' | translate }}</mat-card-title>
-      <mat-card-content>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'country' | translate }}</mat-label>
-          <input [formControl]="personalAddressFormGroup.controls.country" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'city' | translate }}</mat-label>
-          <input [formControl]="personalAddressFormGroup.controls.city" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'street' | translate }}</mat-label>
-          <input [formControl]="personalAddressFormGroup.controls.street" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'house_number' | translate }}</mat-label>
-          <input [formControl]="personalAddressFormGroup.controls.houseNumber" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'zip_code' | translate }}</mat-label>
-          <input [formControl]="personalAddressFormGroup.controls.zipCode" matInput type="text">
-        </mat-form-field>
-
-        <mat-checkbox (change)="syncAddresses()" [checked]="isBillingSameAsPersonal()">
-          {{ 'same_as_personal' | translate }}
-        </mat-checkbox>
-      </mat-card-content>
-    </mat-card>
-  </form>
-
-
-  <form *ngIf="!isBillingSameAsPersonal()" [formGroup]="billingAddressFormGroup">
-    <mat-card>
-      <mat-card-title>{{ 'billing_address' | translate }}</mat-card-title>
-      <mat-card-content>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'country' | translate }}</mat-label>
-          <input [formControl]="billingAddressFormGroup.controls.country" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'city' | translate }}</mat-label>
-          <input [formControl]="billingAddressFormGroup.controls.city" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'street' | translate }}</mat-label>
-          <input [formControl]="billingAddressFormGroup.controls.street" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'house_number' | translate }}</mat-label>
-          <input [formControl]="billingAddressFormGroup.controls.houseNumber" matInput type="text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'zip_code' | translate }}</mat-label>
-          <input [formControl]="billingAddressFormGroup.controls.zipCode" matInput type="text">
-        </mat-form-field>
-
-      </mat-card-content>
-    </mat-card>
-  </form>
 </form>
