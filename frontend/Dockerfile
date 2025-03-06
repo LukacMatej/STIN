@@ -20,5 +20,5 @@ RUN npm install
 RUN npm run build:prod
 
 # Serve the application
-CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200", "--configuration=production"]
+CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "3000", "--configuration=production"]
 
