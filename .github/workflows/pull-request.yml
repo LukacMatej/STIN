@@ -41,9 +41,12 @@ jobs:
           docker-compose up -d
           docker ps
 
+      - name: Install pytest in backend container
+        run: docker-compose exec -T backend pip install pytest pytest-cov flask-testing pytest-mock
+        
       - name: Run backend tests
         run: |
-          docker-compose exec -T backend pytest --cov=app --cov-report=xml
+          docker-compose exec -T backend pytest --cov=server --cov-report=xml
 
       - name: Copy backend coverage report
         run: |
