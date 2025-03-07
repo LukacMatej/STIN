@@ -43,25 +43,28 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))    
 
-@app.route('/api/v1/auth/login', methods=['POST'])
+@app.route('/api/v1/auth/login', methods=['GET','POST'])
 def login():
-    logger.debug('User visited login page')
-    email: str = request.json.get('email')
-    password: str = request.json.get('password')
-    sign_in_model = sim.SignInModel(email, password)
-    validated: bool = auth_service.validateLogin(sign_in_model)
-    if validated:
-        logger.debug('User logged in')
-        session['auth'] = True
-        session['id'] = sign_in_model['id']
-        session['username'] = sign_in_model['username']
-        redirect(url_for(''))
-        return 200, 'Login successful'
-    else:
-        logger.debug('Invalid credentials')
-        return 401, 'Invalid credentials'
+    if request.method == 'GET':
+        return 200, 'Login page'
+    if request.method == 'POST':
+        logger.debug('User visited login page')
+        email: str = request.json.get('email')
+        password: str = request.json.get('password')
+        sign_in_model = sim.SignInModel(email, password)
+        validated: bool = auth_service.validateLogin(sign_in_model)
+        if validated:
+            logger.debug('User logged in')
+            session['auth'] = True
+            session['id'] = sign_in_model['id']
+            session['username'] = sign_in_model['username']
+            redirect(url_for(''))
+            return 200, 'Login successful'
+        else:
+            logger.debug('Invalid credentials')
+            return 401, 'Invalid credentials'
 
-@app.route('/api/v1/auth/register', methods=['POST'])
+@app.route('/api/v1/auth/registration', methods=['POST'])
 def register():
     logger.debug('User visited registration page')
     email: str = request.json.get('email')
