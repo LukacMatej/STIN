@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, session, jsonify, request
-import flask_cors
+from flask_cors import CORS
 import argparse
 from google.genai.types import GenerateContentResponse
 from waitress import serve
@@ -15,7 +15,7 @@ import secrets
 
 app = Flask(__name__)
 
-flask_cors.CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
 app.secret_key = secrets.token_hex(16)
 
