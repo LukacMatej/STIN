@@ -3,7 +3,7 @@ from ..sign_in.model import sign_in_model as sim
 from ..sign_up.model import sign_up_model as sum
 
 def saveRegistrationJson(su_model: sum.SignUpModel) -> None:
-    with open('registration.json', 'a') as f:
+    with open('users.txt', 'a') as f:
         f.write(str(su_model))
 
 def validateLogin(si_model: sim.SignInModel) -> bool:
