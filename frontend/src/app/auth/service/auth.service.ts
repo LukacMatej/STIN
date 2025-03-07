@@ -39,6 +39,7 @@ export class AuthService {
    * @see SignUpModel
    */
   signUp(signUpModel: SignUpModel): Observable<boolean> {
+    console.log("Sending sign up request")
     return this.httpService.post(`${this.rootHttpUrl}registration`, signUpModel)
   }
 

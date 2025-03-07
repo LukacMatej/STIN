@@ -58,6 +58,7 @@ export class SignUpComponent {
   onSubmit() {
     if (this.formGroup.valid) {
       const signUpModel = SignUpModel(this.formGroup.getRawValue())
+      console.log(signUpModel)
       this.authService.signUp(signUpModel).subscribe({
         next: () => {
           this.translate.get('auth.loginSuccess').subscribe((res: string) => {
