@@ -10,7 +10,7 @@ class SignUpModel:
         self.id: int = self.generateId()
         
     def __str__(self):
-        return f"{self.email} {self.password} {self.first_name} {self.last_name} {self.second_password}"
+        return f"{self.email} {self.password} {self.first_name} {self.last_name} {self.second_password} {self.id}"
     
     def generateId(self) -> int:
         # Ensure the ID is unique by checking against existing IDs

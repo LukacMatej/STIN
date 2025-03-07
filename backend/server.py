@@ -58,13 +58,14 @@ def login():
         logger.debug('User visited login page (POST)')
         email: str = request.json.get('email')
         password: str = request.json.get('password')
-        sign_in_model = sim.SignInModel(email, password)
-        validated: bool = auth_service.validateLogin(sign_in_model)
+        validated: bool
+        model: sim.SignInModel
+        validated, model = auth_service.validateLogin(email, password)
         if validated:
             logger.debug('User logged in')
             session['auth'] = True
-            session['id'] = sign_in_model['id']
-            session['username'] = sign_in_model['username']
+            session['id'] = model['id']
+            session['username'] = model['username']
             redirect(url_for(''))
             return 'Login successful',200
         else:
