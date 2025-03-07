@@ -47,7 +47,7 @@ def logout():
 def login():
     if request.method == 'GET':
         logger.debug('User visited login page (GET)')
-        return 200, 'Login page'
+        return (200, 'Login page')
     if request.method == 'POST':
         logger.debug('User visited login page (POST)')
         email: str = request.json.get('email')
