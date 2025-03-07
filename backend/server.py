@@ -33,14 +33,14 @@ def getStock():
     print(len(evaluated_stocks))
     return jsonify(evaluated_stocks)
     
-@app.route('/v1/auth/logout')
+@app.route('/api/v1/auth/logout')
 def logout():
     session.pop('auth', None)
     session.pop('id', None)
     session.pop('username', None)
     return redirect(url_for('login'))    
 
-@app.route('/v1/auth/login', methods=['POST'])
+@app.route('/api/v1/auth/login', methods=['POST'])
 def login():
     email: str = request.json.get('email')
     password: str = request.json.get('password')
@@ -54,7 +54,8 @@ def login():
         return 200, 'Login successful'
     else:
         return 401, 'Invalid credentials'
-@app.route('/v1/auth/register', methods=['POST'])
+
+@app.route('/api/v1/auth/register', methods=['POST'])
 def register():
     email: str = request.json.get('email')
     password: str = request.json.get('password')
