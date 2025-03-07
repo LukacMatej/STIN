@@ -9,18 +9,20 @@ from app.genai.service import genai_service as gs
 from app.auth.sign_up.model import sign_up_model as sum
 from app.auth.sign_in.model import sign_in_model as sim
 from app.auth.service import auth_service
+from app.logger.logger_conf import logger
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
+    logger.debug('User visited home page')
     return 'Hello, Flask!'
 
 @app.route('/getStock')
 def getStock():
+    logger.debug('User visited getStock page')
     finnhub_api_key: str = os.environ.get('FINNHUB_API_KEY')
     genai_api_key: str = os.environ.get('GEN_AI_KEY')
-    
     genai_client = gs.genaiClient(genai_api_key)
     client = ss.FinnhubClient(finnhub_api_key)
     stocks = client.getGeneralNews("general")
@@ -35,6 +37,7 @@ def getStock():
     
 @app.route('/api/v1/auth/logout')
 def logout():
+    logger.debug('User logged out')
     session.pop('auth', None)
     session.pop('id', None)
     session.pop('username', None)
@@ -42,21 +45,25 @@ def logout():
 
 @app.route('/api/v1/auth/login', methods=['POST'])
 def login():
+    logger.debug('User visited login page')
     email: str = request.json.get('email')
     password: str = request.json.get('password')
     sign_in_model = sim.SignInModel(email, password)
     validated: bool = auth_service.validateLogin(sign_in_model)
     if validated:
+        logger.debug('User logged in')
         session['auth'] = True
         session['id'] = sign_in_model['id']
         session['username'] = sign_in_model['username']
         redirect(url_for(''))
         return 200, 'Login successful'
     else:
+        logger.debug('Invalid credentials')
         return 401, 'Invalid credentials'
 
 @app.route('/api/v1/auth/register', methods=['POST'])
 def register():
+    logger.debug('User visited registration page')
     email: str = request.json.get('email')
     password: str = request.json.get('password')
     first_name: str = request.json.get('first_name')
