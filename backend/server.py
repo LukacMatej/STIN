@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, session, jsonify, request
 import argparse
 from google.genai.types import GenerateContentResponse
-import waitress
+from waitress import serve
 import os
 
 from app.stock.service import stock_service as ss
@@ -72,9 +72,14 @@ def argParse() -> argparse.Namespace:
     args: argparse.Namespace = parser.parse_args()
     return args
 
-if __name__ == '__main__':
-    args: argparse.Namespace = argParse()
-    if args.debug:
-        app.run(debug=True)
+if __name__ == "__main__":
+    parser: argparse.ArgumentParser = argParse()
+    args: argparse.Namespace = parser.parse_args()
+    docker_ip: str = os.environ.get("LISTEN_ADDRESS")
+    docker_port: str = os.environ.get("HTTP_PORT")
+    if not args.development:
+        # production
+        serve(app, host=docker_ip, port=docker_port)
     else:
-        waitress.serve(app, port=5000)
+        # development
+        app.run(debug=True, host=docker_ip, port=docker_port)
