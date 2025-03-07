@@ -46,9 +46,10 @@ def logout():
 @app.route('/api/v1/auth/login', methods=['GET','POST'])
 def login():
     if request.method == 'GET':
+        logger.debug('User visited login page (GET)')
         return 200, 'Login page'
     if request.method == 'POST':
-        logger.debug('User visited login page')
+        logger.debug('User visited login page (POST)')
         email: str = request.json.get('email')
         password: str = request.json.get('password')
         sign_in_model = sim.SignInModel(email, password)
