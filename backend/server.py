@@ -47,7 +47,7 @@ def logout():
     session.pop('auth', None)
     session.pop('id', None)
     session.pop('username', None)
-    return redirect(url_for('login'))
+    return "Logged out", 200
 
 @app.route('/api/v1/auth/login', methods=['GET','POST'])
 def login():
@@ -66,7 +66,6 @@ def login():
             session['auth'] = True
             session['id'] = model.id
             session['username'] = model.email
-            redirect(url_for(''))
             return 'Login successful',200
         else:
             logger.debug('Invalid credentials')
@@ -85,7 +84,6 @@ def register():
         return 'Passwords do not match', 400
     sign_up_model = sum.SignUpModel(email, password, first_name, last_name, second_password)
     auth_service.saveRegistrationJson(sign_up_model)
-    redirect(url_for('login'))
     return 'Registration successful', 200
 
 def parser_init() -> argparse.ArgumentParser:
