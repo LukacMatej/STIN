@@ -49,11 +49,8 @@ def logout():
     session.pop('username', None)
     return "Logged out", 200
 
-@app.route('/api/v1/auth/login', methods=['GET','POST'])
+@app.route('/api/v1/auth/login', methods=['POST'])
 def login():
-    if request.method == 'GET':
-        logger.debug('User visited login page (GET)')
-        return 'Login page'
     if request.method == 'POST':
         logger.debug('User visited login page (POST)')
         email: str = request.json.get('email')
