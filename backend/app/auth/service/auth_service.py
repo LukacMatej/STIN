@@ -10,8 +10,7 @@ def validateLogin(si_model: sim.SignInModel) -> bool:
     with open('users.txt', 'r') as f:
         for line in f:
             email, password, name, surname, second_password = line.split()
-            line_model = sim.SignInModel(email, password, name, surname, second_password, id)
-            if (si_model.email == line_model.email and 
-                si_model.password == line_model.password):
+            if (si_model.email == email and 
+                si_model.password == password):
                 return True
     return False

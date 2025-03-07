@@ -79,6 +79,9 @@ def register():
     first_name: str = request.json.get('firstName')
     last_name: str = request.json.get('lastName')
     second_password: str = request.json.get('secondPassword')
+    if password != second_password:
+        logger.debug('Passwords do not match')
+        return 'Passwords do not match', 400
     sign_up_model = sum.SignUpModel(email, password, first_name, last_name, second_password)
     auth_service.saveRegistrationJson(sign_up_model)
     redirect(url_for('login'))
