@@ -15,4 +15,4 @@ ADD tests/ /tests
 
 EXPOSE 8000
 
-CMD python3 server.py --debug
+CMD python3 server.py --debug -d
