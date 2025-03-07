@@ -11,6 +11,7 @@ RUN pip install pytest pytest-cov
 WORKDIR /
 ADD app/ /app
 ADD server.py /
+ADD tests/ /tests
 
 EXPOSE 8000
 
