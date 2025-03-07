@@ -64,8 +64,8 @@ def login():
         if validated:
             logger.debug('User logged in')
             session['auth'] = True
-            session['id'] = model['id']
-            session['username'] = model['username']
+            session['id'] = model.id
+            session['username'] = model.email
             redirect(url_for(''))
             return 'Login successful',200
         else:
