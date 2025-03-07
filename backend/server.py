@@ -33,31 +33,28 @@ def getStock():
     print(len(evaluated_stocks))
     return jsonify(evaluated_stocks)
     
-@app.route('/logout')
+@app.route('/v1/auth/logout')
 def logout():
-    session.pop('loggedin', None)
+    session.pop('auth', None)
     session.pop('id', None)
     session.pop('username', None)
     return redirect(url_for('login'))    
 
-@app.route('/login', methods=['POST'])
+@app.route('/v1/auth/login', methods=['POST'])
 def login():
     email: str = request.json.get('email')
     password: str = request.json.get('password')
     sign_in_model = sim.SignInModel(email, password)
     validated: bool = auth_service.validateLogin(sign_in_model)
     if validated:
-        session['loggedin'] = True
+        session['auth'] = True
         session['id'] = sign_in_model['id']
         session['username'] = sign_in_model['username']
-        msg = 'Logged in successfully !'
         redirect(url_for(''))
-        return msg
+        return 200, 'Login successful'
     else:
-        msg = 'Incorrect username / password !'
-    return msg
-
-@app.route('/register', methods=['POST'])
+        return 401, 'Invalid credentials'
+@app.route('/v1/auth/register', methods=['POST'])
 def register():
     email: str = request.json.get('email')
     password: str = request.json.get('password')
@@ -67,7 +64,7 @@ def register():
     sign_up_model = sum.SignUpModel(email, password, first_name, last_name, second_password)
     auth_service.saveRegistrationJson(sign_up_model)
     redirect(url_for('login'))
-    return 'Registration successful !'
+    return 200, 'Registration successful'
 
 def argParse() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='A simple Flask application.')
