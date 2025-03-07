@@ -10,8 +10,11 @@ from app.auth.sign_up.model import sign_up_model as sum
 from app.auth.sign_in.model import sign_in_model as sim
 from app.auth.service import auth_service
 from app.logger.logger_conf import logger
+import secrets
 
 app = Flask(__name__)
+
+app.secret_key = secrets.token_hex(16)
 
 @app.route('/')
 def index():
