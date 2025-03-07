@@ -44,13 +44,13 @@ def logout():
     session.pop('auth', None)
     session.pop('id', None)
     session.pop('username', None)
-    return redirect(url_for('login'))    
+    return redirect(url_for('login'))
 
 @app.route('/api/v1/auth/login', methods=['GET','POST'])
 def login():
     if request.method == 'GET':
         logger.debug('User visited login page (GET)')
-        return (200, 'Login page')
+        return 'Login page'
     if request.method == 'POST':
         logger.debug('User visited login page (POST)')
         email: str = request.json.get('email')
@@ -63,10 +63,10 @@ def login():
             session['id'] = sign_in_model['id']
             session['username'] = sign_in_model['username']
             redirect(url_for(''))
-            return 200, 'Login successful'
+            return 'Login successful'
         else:
             logger.debug('Invalid credentials')
-            return 401, 'Invalid credentials'
+            return 'Invalid credentials'
 
 @app.route('/api/v1/auth/registration', methods=['POST'])
 def register():
