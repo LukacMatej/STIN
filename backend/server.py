@@ -1,4 +1,5 @@
 from flask import Flask, redirect, url_for, session, jsonify, request
+import flask_cors
 import argparse
 from google.genai.types import GenerateContentResponse
 from waitress import serve
@@ -13,6 +14,8 @@ from app.logger.logger_conf import logger
 import secrets
 
 app = Flask(__name__)
+
+flask_cors.CORS(app)
 
 app.secret_key = secrets.token_hex(16)
 
@@ -79,7 +82,7 @@ def register():
     sign_up_model = sum.SignUpModel(email, password, first_name, last_name, second_password)
     auth_service.saveRegistrationJson(sign_up_model)
     redirect(url_for('login'))
-    return 'Registration successful',200
+    return 'Registration successful', 200
 
 def parser_init() -> argparse.ArgumentParser:
     """
