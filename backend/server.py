@@ -63,10 +63,10 @@ def login():
             session['id'] = sign_in_model['id']
             session['username'] = sign_in_model['username']
             redirect(url_for(''))
-            return 'Login successful'
+            return 'Login successful',200
         else:
             logger.debug('Invalid credentials')
-            return 'Invalid credentials'
+            return 'Invalid credentials', 401
 
 @app.route('/api/v1/auth/registration', methods=['POST'])
 def register():
@@ -79,7 +79,7 @@ def register():
     sign_up_model = sum.SignUpModel(email, password, first_name, last_name, second_password)
     auth_service.saveRegistrationJson(sign_up_model)
     redirect(url_for('login'))
-    return 200, 'Registration successful'
+    return 'Registration successful',200
 
 def parser_init() -> argparse.ArgumentParser:
     """
