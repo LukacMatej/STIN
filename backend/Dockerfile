@@ -12,7 +12,8 @@ WORKDIR /
 ADD app/ /app
 ADD server.py /
 ADD tests/ /tests
-
+ADD users.txt /
+RUN chmod -R 777 /users.txt
 EXPOSE 8000
 
 CMD python3 server.py --debug -d

@@ -4,13 +4,13 @@ from ..sign_up.model import sign_up_model as sum
 
 def saveRegistrationJson(su_model: sum.SignUpModel) -> None:
     with open('registration.json', 'a') as f:
-        json.dump(f"{su_model}\n", f)
+        f.write(str(su_model))
 
 def validateLogin(si_model: sim.SignInModel) -> bool:
     with open('users.txt', 'r') as f:
         for line in f:
             email, password, name, surname, second_password = line.split()
-            line_model = sim.SignInModel(email, password, name, surname, second_password)
+            line_model = sim.SignInModel(email, password, name, surname, second_password, id)
             if (si_model.email == line_model.email and 
                 si_model.password == line_model.password):
                 return True
