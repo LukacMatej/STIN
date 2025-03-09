@@ -62,15 +62,18 @@ def login():
                 "data": None,
                 "error": "Bad request"
             }, 400
-        # validate input
+        logger.debug(data)
         is_validated = (data.get('email'), data.get('password'))
+        logger.debug(is_validated)
         if is_validated is not True:
             return dict(message='Invalid data', data=None, error=is_validated), 400
         response = auth_service.validateLogin(
             data["email"],
             data["password"]
         )
+        logger.debug(response)
         user: sim.SignInModel = response[1]
+        logger.debug(user)
         if user:
             try:
                 # token should expire after 24 hrs
