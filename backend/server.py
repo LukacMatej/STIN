@@ -12,7 +12,7 @@ from app.auth.sign_up.model import sign_up_model as sum
 from app.auth.sign_in.model import sign_in_model as sim
 from app.auth.service import auth_service 
 from app.logger.logger_conf import logger
-from backend.app.auth.token import token_required
+from backend.app.auth.token.jwt_token_service import token_required
 
 import secrets
 
