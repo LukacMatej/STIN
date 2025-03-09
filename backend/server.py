@@ -5,6 +5,7 @@ from google.genai.types import GenerateContentResponse
 from waitress import serve
 import os
 import jwt
+import json
 
 from app.stock.service import stock_service as ss
 from app.genai.service import genai_service as gs
@@ -55,7 +56,8 @@ def logout():
 @app.route('/api/v1/auth/login', methods=['POST'])
 def login():
     try:
-        data = request.json
+        data: json.JSON = request.json
+        logger.debug(data)
         if not data:
             return {
                 "message": "Please provide user details",
@@ -65,13 +67,19 @@ def login():
         logger.debug(data)
         is_validated = (data.get('email'), data.get('password'))
         logger.debug(is_validated)
-        if is_validated is not True:
-            return dict(message='Invalid data', data=None, error=is_validated), 400
+        # if is_validated is not True:
+            # return dict(message='Invalid data', data=None, error=is_validated), 400
         response = auth_service.validateLogin(
             data["email"],
             data["password"]
         )
         logger.debug(response)
+        if not response[0]:
+            return {
+                "message": "Error fetching auth token!, invalid email or password",
+                "data": None,
+                "error": "Unauthorized"
+            }, 404
         user: sim.SignInModel = response[1]
         logger.debug(user)
         if user:
