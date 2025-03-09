@@ -84,7 +84,6 @@ def login():
         logger.debug(user)
         if user:
             try:
-                # token should expire after 24 hrs
                 user["token"] = jwt.encode(
                     {"user_id": user["_id"]},
                     app.config["SECRET_KEY"],

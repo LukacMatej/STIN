@@ -10,8 +10,8 @@ def validateLogin(email_input, password_input) -> tuple[bool, sim.SignInModel]:
     sign_in_model = sim.SignInModel(email_input, password_input, 0)
     with open('users.txt', 'r') as f:
         for line in f:
-            email, password, name, surname, second_password, id = line.split()
-            model = sim.SignInModel(email, password, id)
+            email, password, name, surname, second_password, token = line.split()
+            model = sim.SignInModel(email, password, token)
             if (sign_in_model.email == email and 
                 sign_in_model.password == password):
                 return True, model
@@ -20,8 +20,8 @@ def validateLogin(email_input, password_input) -> tuple[bool, sim.SignInModel]:
 def getCurrentUser(data_user):
     with open('users.txt', 'r') as f:
         for line in f:
-            email, password, name, surname, second_password, id = line.split()
+            email, password, name, surname, second_password, token = line.split()
             model = sim.SignInModel(email, password, id)
-            if (model.id == data_user['id']):
+            if (model.token == data_user['id']):
                 return model
     return None

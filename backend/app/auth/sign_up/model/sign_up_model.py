@@ -7,14 +7,13 @@ class SignUpModel:
         self.first_name: str = first_name
         self.last_name:str  = last_name
         self.second_password: str = second_password
-        self.id: int = self.generateId()
+        self.token: int = self.generateToken()
         
     def __str__(self):
-        return f"{self.email} {self.password} {self.first_name} {self.last_name} {self.second_password} {self.id}"
+        return f"{self.email} {self.password} {self.first_name} {self.last_name} {self.second_password} {self.token}"
     
-    def generateId(self) -> int:
-        # Ensure the ID is unique by checking against existing IDs
-        existing_ids = set()  # This should be replaced with actual storage of IDs
+    def generateToken(self) -> int:
+        existing_ids = set()
         new_id = random.randint(1000, 9999)
         while new_id in existing_ids:
             new_id = random.randint(1000, 9999)
