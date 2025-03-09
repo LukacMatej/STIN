@@ -16,3 +16,12 @@ def validateLogin(email_input, password_input) -> tuple[bool, sim.SignInModel]:
                 sign_in_model.password == password):
                 return True, model
     return False, None
+
+def getCurrentUser(data_user):
+    with open('users.txt', 'r') as f:
+        for line in f:
+            email, password, name, surname, second_password, id = line.split()
+            model = sim.SignInModel(email, password, id)
+            if (model.id == data_user['id']):
+                return model
+    return None

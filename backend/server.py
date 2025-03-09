@@ -4,13 +4,16 @@ import argparse
 from google.genai.types import GenerateContentResponse
 from waitress import serve
 import os
+import jwt
 
 from app.stock.service import stock_service as ss
 from app.genai.service import genai_service as gs
 from app.auth.sign_up.model import sign_up_model as sum
 from app.auth.sign_in.model import sign_in_model as sim
-from app.auth.service import auth_service
+from app.auth.service import auth_service 
 from app.logger.logger_conf import logger
+from backend.app.auth.token import token_required
+
 import secrets
 
 app = Flask(__name__)
@@ -51,22 +54,59 @@ def logout():
 
 @app.route('/api/v1/auth/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        logger.debug('User visited login page (POST)')
-        email: str = request.json.get('email')
-        password: str = request.json.get('password')
-        validated: bool
-        model: sim.SignInModel
-        validated, model = auth_service.validateLogin(email, password)
-        if validated:
-            logger.debug('User logged in')
-            session['auth'] = True
-            session['id'] = model.id
-            session['username'] = model.email
-            return 'Login successful',200
-        else:
-            logger.debug('Invalid credentials')
-            return 'Invalid credentials', 401
+    try:
+        data = request.json
+        if not data:
+            return {
+                "message": "Please provide user details",
+                "data": None,
+                "error": "Bad request"
+            }, 400
+        # validate input
+        is_validated = (data.get('email'), data.get('password'))
+        if is_validated is not True:
+            return dict(message='Invalid data', data=None, error=is_validated), 400
+        response = auth_service.validateLogin(
+            data["email"],
+            data["password"]
+        )
+        user: sim.SignInModel = response[1]
+        if user:
+            try:
+                # token should expire after 24 hrs
+                user["token"] = jwt.encode(
+                    {"user_id": user["_id"]},
+                    app.config["SECRET_KEY"],
+                    algorithm="HS256"
+                )
+                return {
+                    "message": "Successfully fetched auth token",
+                    "data": user
+                }
+            except Exception as e:
+                return {
+                    "error": "Something went wrong",
+                    "message": str(e)
+                }, 500
+        return {
+            "message": "Error fetching auth token!, invalid email or password",
+            "data": None,
+            "error": "Unauthorized"
+        }, 404
+    except Exception as e:
+        return {
+                "message": "Something went wrong!",
+                "error": str(e),
+                "data": None
+        }, 500
+
+@app.route("/users/", methods=["GET"])
+@token_required
+def get_current_user(current_user):
+    return jsonify({
+        "message": "successfully retrieved user profile",
+        "data": current_user
+    })
 
 @app.route('/api/v1/auth/registration', methods=['POST'])
 def register():

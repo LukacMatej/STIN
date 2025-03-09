@@ -4,3 +4,4 @@ requests==2.31.0
 finnhub-python==2.4.21
 google-genai
 flask_cors==5.0.1
+pyjwt==2.10.1
