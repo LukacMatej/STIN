@@ -11,9 +11,10 @@ from app.stock.service import stock_service as ss
 from app.genai.service import genai_service as gs
 from app.auth.sign_up.model import sign_up_model as sum
 from app.auth.sign_in.model import sign_in_model as sim
-from app.auth.service import auth_service 
+from app.auth.service import auth_service
 from app.logger.logger_conf import logger
 from app.auth.token.jwt_token_service import token_required
+from app.auth.entity.response_entity import create_response_entity
 
 import secrets
 
@@ -22,30 +23,6 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
 app.secret_key = secrets.token_hex(16)
-
-# Helper function to create ResponseEntity-like responses
-def create_response_entity(data=None, status_code=200, message=None, error=None):
-    """
-    Creates a Flask response with specified data, status code, message, and error.
-
-    Args:
-        data (any, optional): Data to include in the response. Defaults to None.
-        status_code (int, optional): HTTP status code. Defaults to 200.
-        message (str, optional): A message to include in the response. Defaults to None.
-        error (str, optional): An error message to include in the response. Defaults to None.
-
-    Returns:
-        tuple: A tuple containing the JSON response and the HTTP status code.
-    """
-    response_body = {}
-    if data is not None:
-        response_body["data"] = data
-    if message is not None:
-        response_body["message"] = message
-    if error is not None:
-        response_body["error"] = error
-
-    return jsonify(response_body), status_code
 
 @app.route('/')
 def index():
@@ -96,17 +73,25 @@ def login():
         logger.debug(response)
         if not response[0]:
             return create_response_entity(message="Error fetching auth token!, invalid email or password", data=None, error="Unauthorized", status_code=404)
-        
+
         user: sim.SignInModel = response[1]
         logger.debug(user)
         if user:
             try:
-                user["token"] = jwt.encode(
-                    {"user_id": user["_id"]},
+                # Modify this section to convert the SignInModel object to a dictionary
+                user_dict = {
+                    "email": user.email,
+                    "password": user.password,  # Consider omitting the password from the response
+                    "token": user.token,
+                }
+
+                user_dict["token"] = jwt.encode(
+                    {"user_id": user_dict["email"]},  # Use email as user_id, adjust as needed
                     app.config["SECRET_KEY"],
                     algorithm="HS256"
                 )
-                return create_response_entity(message="Successfully fetched auth token", data=user, status_code=200) # Explicit 200
+                return create_response_entity(message="Successfully fetched auth token", data=user_dict, status_code=200)  # Explicit 200
+
             except Exception as e:
                 return create_response_entity(message=str(e), error="Something went wrong", status_code=500)
         return create_response_entity(message="Error fetching auth token!, invalid email or password", data=None, error="Unauthorized", status_code=404)
@@ -129,7 +114,7 @@ def register():
     second_password: str = request.json.get('secondPassword')
     if password != second_password:
         logger.debug('Passwords do not match')
-        return create_response_entity(message="Passwords do not match", status_code=400) # Explicit message for the error
+        return create_response_entity(message="Passwords do not match", status_code=400)  # Explicit message for the error
     sign_up_model = sum.SignUpModel(email, password, first_name, last_name, second_password)
     try:
         auth_service.saveRegistrationJson(sign_up_model)
