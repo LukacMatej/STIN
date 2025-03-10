@@ -64,8 +64,6 @@ def login():
             return create_response_entity(message="Please provide user details", data=None, error="Bad request", status_code=400)
 
         logger.debug(data)
-        # is_validated = (data.get('email'), data.get('password')) # You can add validation logic here if needed.
-
         response = auth_service.validateLogin(
             data["email"],
             data["password"]
@@ -73,20 +71,18 @@ def login():
         logger.debug(response)
         if not response[0]:
             return create_response_entity(message="Error fetching auth token!, invalid email or password", data=None, error="Unauthorized", status_code=404)
-
         user: sim.SignInModel = response[1]
         logger.debug(user)
         if user:
             try:
-                # Modify this section to convert the SignInModel object to a dictionary
                 user_dict = {
                     "email": user.email,
-                    "password": user.password,  # Consider omitting the password from the response
+                    "password": user.password,
                     "token": user.token,
                 }
 
                 user_dict["token"] = jwt.encode(
-                    {"user_id": user_dict["email"]},  # Use email as user_id, adjust as needed
+                    {"user_id": user_dict["email"]},
                     app.config["SECRET_KEY"],
                     algorithm="HS256"
                 )
