@@ -23,6 +23,30 @@ CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
 app.secret_key = secrets.token_hex(16)
 
+# Helper function to create ResponseEntity-like responses
+def create_response_entity(data=None, status_code=200, message=None, error=None):
+    """
+    Creates a Flask response with specified data, status code, message, and error.
+
+    Args:
+        data (any, optional): Data to include in the response. Defaults to None.
+        status_code (int, optional): HTTP status code. Defaults to 200.
+        message (str, optional): A message to include in the response. Defaults to None.
+        error (str, optional): An error message to include in the response. Defaults to None.
+
+    Returns:
+        tuple: A tuple containing the JSON response and the HTTP status code.
+    """
+    response_body = {}
+    if data is not None:
+        response_body["data"] = data
+    if message is not None:
+        response_body["message"] = message
+    if error is not None:
+        response_body["error"] = error
+
+    return jsonify(response_body), status_code
+
 @app.route('/')
 def index():
     logger.debug('User visited home page')
@@ -45,13 +69,14 @@ def getStock():
     print(len(evaluated_stocks))
     return jsonify(evaluated_stocks)
     
-@app.route('/api/v1/auth/logout')
+@app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():
     logger.debug('User logged out')
     session.pop('auth', None)
     session.pop('id', None)
     session.pop('username', None)
-    return "Logged out", 200
+    # Changed to POST since it's a logout action
+    return create_response_entity(message="Logged out", status_code=200)
 
 @app.route('/api/v1/auth/login', methods=['POST'])
 def login():
@@ -59,27 +84,19 @@ def login():
         data: json.JSON = request.json
         logger.debug(data)
         if not data:
-            return {
-                "message": "Please provide user details",
-                "data": None,
-                "error": "Bad request"
-            }, 400
+            return create_response_entity(message="Please provide user details", data=None, error="Bad request", status_code=400)
+
         logger.debug(data)
-        is_validated = (data.get('email'), data.get('password'))
-        logger.debug(is_validated)
-        # if is_validated is not True:
-            # return dict(message='Invalid data', data=None, error=is_validated), 400
+        # is_validated = (data.get('email'), data.get('password')) # You can add validation logic here if needed.
+
         response = auth_service.validateLogin(
             data["email"],
             data["password"]
         )
         logger.debug(response)
         if not response[0]:
-            return {
-                "message": "Error fetching auth token!, invalid email or password",
-                "data": None,
-                "error": "Unauthorized"
-            }, 404
+            return create_response_entity(message="Error fetching auth token!, invalid email or password", data=None, error="Unauthorized", status_code=404)
+        
         user: sim.SignInModel = response[1]
         logger.debug(user)
         if user:
@@ -89,34 +106,18 @@ def login():
                     app.config["SECRET_KEY"],
                     algorithm="HS256"
                 )
-                return {
-                    "message": "Successfully fetched auth token",
-                    "data": user
-                }
+                return create_response_entity(message="Successfully fetched auth token", data=user, status_code=200) # Explicit 200
             except Exception as e:
-                return {
-                    "error": "Something went wrong",
-                    "message": str(e)
-                }, 500
-        return {
-            "message": "Error fetching auth token!, invalid email or password",
-            "data": None,
-            "error": "Unauthorized"
-        }, 404
+                return create_response_entity(message=str(e), error="Something went wrong", status_code=500)
+        return create_response_entity(message="Error fetching auth token!, invalid email or password", data=None, error="Unauthorized", status_code=404)
+
     except Exception as e:
-        return {
-                "message": "Something went wrong!",
-                "error": str(e),
-                "data": None
-        }, 500
+        return create_response_entity(message="Something went wrong!", error=str(e), data=None, status_code=500)
 
 @app.route("/users/", methods=["GET"])
 @token_required
 def get_current_user(current_user):
-    return jsonify({
-        "message": "successfully retrieved user profile",
-        "data": current_user
-    })
+    return create_response_entity(message="Successfully retrieved user profile", data=current_user)
 
 @app.route('/api/v1/auth/registration', methods=['POST'])
 def register():
@@ -128,10 +129,15 @@ def register():
     second_password: str = request.json.get('secondPassword')
     if password != second_password:
         logger.debug('Passwords do not match')
-        return 'Passwords do not match', 400
+        return create_response_entity(message="Passwords do not match", status_code=400) # Explicit message for the error
     sign_up_model = sum.SignUpModel(email, password, first_name, last_name, second_password)
-    auth_service.saveRegistrationJson(sign_up_model)
-    return 'Registration successful', 200
+    try:
+        auth_service.saveRegistrationJson(sign_up_model)
+        return create_response_entity(message="Registration successful", status_code=200)
+    except Exception as e:  # Catch any potential exceptions during registration
+        logger.error(f"Registration failed: {e}")
+        return create_response_entity(message="Registration failed", error=str(e), status_code=500)
+
 
 def parser_init() -> argparse.ArgumentParser:
     """
