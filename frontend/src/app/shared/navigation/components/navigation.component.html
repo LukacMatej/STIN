@@ -17,18 +17,6 @@
     </li>
   </a>
 
-  <a *ngIf="isUserSignedIn()" [routerLink]="'/cart'">
-    <li [class.selected]="isSelected('/cart')" class="page-body-text">
-      <span>{{'CART' | translate}}</span>
-    </li>
-  </a>
-
-  <a *ngIf="isUserSignedIn()" [routerLink]="'/order'">
-    <li [class.selected]="isSelected('/order')" class="page-body-text">
-      <span>{{'ORDERS' | translate}}</span>
-    </li>
-  </a>
-
   <span class="fill-space"></span>
 
   <span>{{authUser()?.firstName}} {{authUser()?.lastName}}</span>
