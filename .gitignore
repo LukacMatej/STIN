@@ -6,10 +6,14 @@ __pycache__
 db.sqlite3
 media
 
+./docker-compose.yml
+
+./backend/Dockerfile
+
+./frontend/Dockerfile
+
 burza1.json
-docker-compose.yml
-backend/Dockerfile
-frontend/Dockerfile
+
 # Backup files # 
 *.bak 
 
