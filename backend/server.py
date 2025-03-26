@@ -29,8 +29,8 @@ def index():
     logger.debug('User visited home page')
     return 'Hello, Flask!'
 
-@app.route('/getStock')
-def getStock():
+@app.route('/evaluateStocks')
+def evaluateStocks():
     logger.debug('User visited getStock page')
     finnhub_api_key: str = os.environ.get('FINNHUB_API_KEY')
     genai_api_key: str = os.environ.get('GEN_AI_KEY')
@@ -52,7 +52,6 @@ def logout():
     session.pop('auth', None)
     session.pop('id', None)
     session.pop('username', None)
-    # Changed to POST since it's a logout action
     return create_response_entity(message="Logged out", status_code=200)
 
 @app.route('/api/v1/auth/login', methods=['POST'])
