@@ -7,7 +7,9 @@ db.sqlite3
 media
 
 burza1.json
-
+docker-compose.yml
+backend/Dockerfile
+frontend/Dockerfile
 # Backup files # 
 *.bak 
 
