@@ -22,6 +22,7 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           branch: 'main'
           appdir: 'backend'
+          procfile: 'web: gunicorn app:app'
         env:
           HD_DEBUG: true  # Enable debug mode for more information
 
@@ -42,5 +43,6 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           branch: 'main'
           appdir: 'frontend'
+          procfile: 'web: npm start'
         env:
           HD_DEBUG: true  # Enable debug mode for more information
