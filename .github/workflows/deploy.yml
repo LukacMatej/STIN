@@ -3,11 +3,13 @@ run-name: "Run ${{github.run_id}}, triggered by ${{github.actor}}"
 
 on:
   workflow_dispatch:
+
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Deploy backend to Heroku
         uses: akhileshns/heroku-deploy@v3.13.15
         with:
@@ -16,12 +18,15 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           branch: 'main'
           appdir: 'backend'
+        env:
+          HD_DEBUG: true  # Enable debug mode for more information
 
   deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy backend to Heroku
+      
+      - name: Deploy frontend to Heroku
         uses: akhileshns/heroku-deploy@v3.13.15
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
@@ -29,3 +34,5 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           branch: 'main'
           appdir: 'frontend'
+        env:
+          HD_DEBUG: true  # Enable debug mode for more information
