@@ -9,7 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          apt install gunicorn -y
       - name: Deploy backend to Heroku
         uses: akhileshns/heroku-deploy@v3.13.15
         with:
