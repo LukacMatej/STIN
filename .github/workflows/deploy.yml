@@ -39,6 +39,5 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL}}
           branch: 'main'
           appdir: 'frontend'
-          procfile: 'web: npm install -g http-server && http-server dist -p $PORT'
         env:
           HD_DEBUG: true
