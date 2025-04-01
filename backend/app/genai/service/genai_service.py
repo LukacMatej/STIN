@@ -17,10 +17,10 @@ class genaiClient:
         
 
     def evaluateText(self, stocks: list[sm.Stock]) -> str:
-        text = ''
+        text: str = ''
         for stock in stocks:
             text += json.dumps(stock.contextForAI()) + '\n'
-        prompt = (
+        prompt: str = (
             "Analyze the sentiment of each stock provided in the JSON data below. "
             "For each stock, respond with a JSON object containing two fields: 'symbol' (string) and 'rating' (string). "
             "The 'rating' should be a string representation of a number from -10 (very negative) to 10 (very positive). "
