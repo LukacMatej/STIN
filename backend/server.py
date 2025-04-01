@@ -20,7 +20,7 @@ import secrets
 
 app = Flask(__name__)
 
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+CORS(app, supports_credentials=True, origins=["http://localhost:3000","https://stin-2025-app-frontend-11efe8067f8c.herokuapp.com"])
 
 app.secret_key = secrets.token_hex(16)
 
