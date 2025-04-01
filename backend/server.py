@@ -15,8 +15,10 @@ from app.auth.service import auth_service
 from app.logger.logger_conf import logger
 from app.auth.token.jwt_token_service import token_required
 from app.auth.entity.response_entity import create_response_entity
+from app.stock.model import stock_model as sm
 
 import secrets
+
 
 app = Flask(__name__)
 
@@ -41,15 +43,21 @@ def evaluateStocks():
     logger.debug('User visited evaluateStocks page')
     finnhub_api_key: str = os.environ.get('FINNHUB_API_KEY')
     genai_api_key: str = os.environ.get('GEN_AI_KEY')
-    print(finnhub_api_key)
-    print(genai_api_key)
     genai_client = gs.genaiClient(genai_api_key)
     client = ss.FinnhubClient(finnhub_api_key)
     parsed_stocks = ss.parseStockSymbols(data['stocks'])
     stocks = client.getStockNews(parsed_stocks)
-    response: GenerateContentResponse = genai_client.evaluateText(stocks)
-    print(response.text)
-    return jsonify(response.text), 200
+    ai_response: GenerateContentResponse = genai_client.evaluateText(stocks)
+    stocks: list[sm.Stock] = ss.appplyRatingToStocks(stocks, ai_response.text)
+    ss.saveStocksToFile(stocks, filename='stocks_info.txt')
+    logger.debug('Stocks evaluated')
+    answer = ss.prepareAnswer(stocks)
+    logger.debug(answer)
+    response = {
+        "message": "Stocks evaluated",
+        "data": answer
+    }
+    return jsonify(response), 200
     
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():
