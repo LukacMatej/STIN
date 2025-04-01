@@ -1,35 +1,41 @@
 import json
-from google import genai
-from google.generativeai.types import GenerationConfig
+import google.generativeai as genai
+from google.generativeai import GenerationConfig
+from pydantic import BaseModel
+from google.generativeai.types.generation_types import GenerateContentResponse
 from ...stock.model import stock_model as sm
+
+class Output(BaseModel):
+  symbol: str
+  rating: str
 
 
 class genaiClient:
     def __init__(self, api_key: str):
-        self.client = genai.Client(api_key=api_key)
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel('gemini-1.5-pro-latest')
+        
 
     def evaluateText(self, stocks: list[sm.Stock]) -> str:
         text = ''
         for stock in stocks:
             text += json.dumps(stock.contextForAI()) + '\n'
         prompt = (
-            "For each JSON value evaluate as either positive or negative, "
-            "responding with a single number ranging from -10 to 10 in text on each row. "
-            "Respond only with JSON, no other text. "
-            "If the JSON is not valid, respond with 'Invalid JSON'. "
-            "Format will be JSON, with each line being a JSON object. If there's only one symbol, respond with a single JSON object. "
-            f"The JSON is: {text} "
-            "Output JSON should be like this example: [{'symbol': 'AAPL', 'rating': 5}, {'symbol': 'GOOG', 'rating': -3}]"
+            "Analyze the sentiment of each stock provided in the JSON data below. "
+            "For each stock, respond with a JSON object containing two fields: 'symbol' (string) and 'rating' (string). "
+            "The 'rating' should be a string representation of a number from -10 (very negative) to 10 (very positive). "
+            "If a JSON input line is invalid, you can omit it or return an object like {\"symbol\": \"INVALID\", \"rating\": \"N/A\"}. "
+            "The final output MUST be a single JSON array containing these objects. Use only double quotes. Do not include any text before or after the JSON array.\n"
+            f"The JSON data:\n{text}"
         )
         config = GenerationConfig(
             temperature=0.0,
-            response_mime_type="application/json"
+            response_mime_type="application/json",
+            response_schema=list[Output]
         )
-        response = self.client.models.generate_content(
-            model='gemini-2.0-flash-001',
-            contents=prompt,
-            generation_config=config
-        )
-        
+        response: GenerateContentResponse = self.model.generate_content(
+             contents=prompt,
+             generation_config=config
+        )        
         return(response)
     
