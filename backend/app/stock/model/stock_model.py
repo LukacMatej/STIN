@@ -1,3 +1,5 @@
+import json
+
 class Stock:
     def __init__(self, symbol: str, name: str, price: float):
         self.symbol: str = symbol
@@ -17,6 +19,11 @@ class Stock:
     def __str__(self):
         return f"Stock(symbol={self.symbol}, name={self.name}, price={self.price}, news={self.news}, rating={self.rating})"
     def contextForAI(self):
+        news: list[str] = []
+        self.news = json.loads(self.news)
+        for new in self.news:
+            news.append(new['summary'])
+        self.news = news
         return {
             "symbol": self.symbol,
             "name": self.name,

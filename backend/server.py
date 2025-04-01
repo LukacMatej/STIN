@@ -41,14 +41,15 @@ def evaluateStocks():
     logger.debug('User visited evaluateStocks page')
     finnhub_api_key: str = os.environ.get('FINNHUB_API_KEY')
     genai_api_key: str = os.environ.get('GEN_AI_KEY')
+    print(finnhub_api_key)
+    print(genai_api_key)
     genai_client = gs.genaiClient(genai_api_key)
     client = ss.FinnhubClient(finnhub_api_key)
     parsed_stocks = ss.parseStockSymbols(data['stocks'])
-    stocks = client.getGeneralNews(parsed_stocks)
+    stocks = client.getStockNews(parsed_stocks)
     response: GenerateContentResponse = genai_client.evaluateText(stocks)
-    print(response)
-    print(len(response))
-    return jsonify(response), 200
+    print(response.text)
+    return jsonify(response.text), 200
     
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():

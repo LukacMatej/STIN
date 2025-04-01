@@ -6,6 +6,7 @@ __pycache__
 db.sqlite3
 media
 
+testing.py
 burza1.json
 docker-compose.yml
 backend/Dockerfile
