@@ -29,22 +29,26 @@ def index():
     logger.debug('User visited home page')
     return 'Hello, Flask!'
 
-@app.route('/evaluateStocks')
+@app.route('/evaluateStocks', methods=['POST'])	
 def evaluateStocks():
-    logger.debug('User visited getStock page')
+    data = request.json
+    if data is None:
+        logger.debug('No data provided')
+        return create_response_entity(message="No data provided", status_code=400)
+    if 'stocks' not in data:
+        logger.debug('No stocks provided')
+        return create_response_entity(message="No stocks provided", status_code=400)
+    logger.debug('User visited evaluateStocks page')
     finnhub_api_key: str = os.environ.get('FINNHUB_API_KEY')
     genai_api_key: str = os.environ.get('GEN_AI_KEY')
     genai_client = gs.genaiClient(genai_api_key)
     client = ss.FinnhubClient(finnhub_api_key)
-    stocks = client.getGeneralNews("general")
-    stocks_summary = []
-    for stock in stocks:
-        stocks_summary.append(stock['summary'])
-    response: GenerateContentResponse = genai_client.evaluateText(stocks_summary)
-    evaluated_stocks: list[str] = str(response.text).split('\n')
-    print(evaluated_stocks)
-    print(len(evaluated_stocks))
-    return jsonify(evaluated_stocks)
+    parsed_stocks = ss.parseStockSymbols(data['stocks'])
+    stocks = client.getGeneralNews(parsed_stocks)
+    response: GenerateContentResponse = genai_client.evaluateText(stocks)
+    print(response)
+    print(len(response))
+    return jsonify(response), 200
     
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():
