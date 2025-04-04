@@ -47,17 +47,14 @@ def evaluateStocks():
     client = ss.FinnhubClient(finnhub_api_key)
     parsed_stocks = ss.parseStockSymbols(data['stocks'])
     stocks = client.getStockNews(parsed_stocks)
-    ai_response: GenerateContentResponse = genai_client.evaluateText(stocks)
-    stocks: list[sm.Stock] = ss.appplyRatingToStocks(stocks, ai_response.text)
+    ai_response: dict[str,int] = genai_client.evaluateText(stocks)
+    stocks: list[sm.Stock] = ss.appplyRatingToStocks(stocks, ai_response)
     ss.saveStocksToFile(stocks, filename='stocks_info.txt')
     logger.debug('Stocks evaluated')
     answer = ss.prepareAnswer(stocks)
     logger.debug(answer)
-    response = {
-        "message": "Stocks evaluated",
-        "data": answer
-    }
-    return jsonify(response), 200
+    answer_json = json.loads(answer)
+    return create_response_entity(data=answer_json, status_code=200)
     
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():

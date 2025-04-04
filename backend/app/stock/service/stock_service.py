@@ -26,21 +26,12 @@ def parseStockSymbols(stocks: json) -> list[str]:
             raise ValueError("Invalid stock data: missing 'symbol' key")
     return parsed_stocks
 
-def appplyRatingToStocks(stocks: list[sm.Stock], response: str) -> list[sm.Stock]:
+def appplyRatingToStocks(stocks: list[sm.Stock], response: dict[str,int]) -> list[sm.Stock]:
     try:
-        response = response.replace('```json', '')
-        response = response.replace('```', '',).strip()
-        response = "[" + ",".join(response.splitlines()) + "]"
         print(response)
-        parsed_response = json.loads(response)
-        print(parsed_response)
-        print([print(stock) for stock in stocks])
-        parsed_symbols = {item['symbol']: item['rating'] for item in parsed_response}
         for stock in stocks:
-            if stock.symbol in parsed_response:
-                print(stock.symbol)
-                print(parsed_response[stock.symbol])
-                stock.setRating(parsed_response[stock.symbol])
+            if stock.symbol in response.keys():
+                stock.setRating(response[stock.symbol])
             else:
                 raise ValueError(f"Stock symbol {stock.symbol} not found in response")
     except json.JSONDecodeError as e:
@@ -52,11 +43,17 @@ def appplyRatingToStocks(stocks: list[sm.Stock], response: str) -> list[sm.Stock
 def saveStocksToFile(stocks: list[sm.Stock], filename: str = 'stocks_info.txt') -> None:
     with open(filename, 'a') as file:
         for stock in stocks:
-            file.write(f"{stock}\n")
+            file.write(f"{stock.symbol, stock.name, stock.news, stock.price, stock.rating}\n")
     file.close()
     
 def prepareAnswer(stocks: list[sm.Stock]) -> str:
-    answer = ''
-    for stock in stocks:
-        answer += f"{stock.symbol}: {stock.rating}\n"
-    return answer.strip()
+    response = {
+        "stocks": [
+            {
+                "symbol": stock.symbol,
+                "rating": str(stock.rating) if stock.rating is not None else "N/A"
+            }
+            for stock in stocks
+        ]
+    }
+    return json.dumps(response, indent=4)

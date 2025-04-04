@@ -4,7 +4,7 @@ from typing import Any
 class Stock:
     def __init__(self, symbol: str, name: str, price: float) -> None:
         self.symbol: str = symbol
-        self.name: str = name
+        self.name: str | None = name if name else None
         self.price: float | None = price if price else None
         self.news: str | None = None
         self.rating: float | None = None
