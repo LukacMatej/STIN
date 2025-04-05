@@ -15,8 +15,10 @@ from app.auth.service import auth_service
 from app.logger.logger_conf import logger
 from app.auth.token.jwt_token_service import token_required
 from app.auth.entity.response_entity import create_response_entity
+from app.stock.model import stock_model as sm
 
 import secrets
+
 
 app = Flask(__name__)
 
@@ -29,22 +31,30 @@ def index():
     logger.debug('User visited home page')
     return 'Hello, Flask!'
 
-@app.route('/evaluateStocks')
+@app.route('/evaluateStocks', methods=['POST'])	
 def evaluateStocks():
-    logger.debug('User visited getStock page')
+    data = request.json
+    if data is None:
+        logger.debug('No data provided')
+        return create_response_entity(message="No data provided", status_code=400)
+    if 'stocks' not in data:
+        logger.debug('No stocks provided')
+        return create_response_entity(message="No stocks provided", status_code=400)
+    logger.debug('User visited evaluateStocks page')
     finnhub_api_key: str = os.environ.get('FINNHUB_API_KEY')
     genai_api_key: str = os.environ.get('GEN_AI_KEY')
     genai_client = gs.genaiClient(genai_api_key)
     client = ss.FinnhubClient(finnhub_api_key)
-    stocks = client.getGeneralNews("general")
-    stocks_summary = []
-    for stock in stocks:
-        stocks_summary.append(stock['summary'])
-    response: GenerateContentResponse = genai_client.evaluateText(stocks_summary)
-    evaluated_stocks: list[str] = str(response.text).split('\n')
-    print(evaluated_stocks)
-    print(len(evaluated_stocks))
-    return jsonify(evaluated_stocks)
+    parsed_stocks = ss.parseStockSymbols(data['stocks'])
+    stocks = client.getStockNews(parsed_stocks)
+    ai_response: dict[str,int] = genai_client.evaluateText(stocks)
+    stocks: list[sm.Stock] = ss.appplyRatingToStocks(stocks, ai_response)
+    ss.saveStocksToFile(stocks, filename='stocks_info.txt')
+    logger.debug('Stocks evaluated')
+    answer = ss.prepareAnswer(stocks)
+    logger.debug(answer)
+    answer_json = json.loads(answer)
+    return create_response_entity(data=answer_json, status_code=200)
     
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():
