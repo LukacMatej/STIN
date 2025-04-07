@@ -5,17 +5,19 @@
     </li>
   </a>
 
+  <a [routerLink]="'/portfolio'">
+    <li [class.selected]="isSelected('/portfolio')" class="page-body-text">
+      <span>{{'PORTFOLIO' | translate}}</span>
+    </li>
+  </a>
+
   <a *ngIf="isUserSignedIn()" [routerLink]="'/favorite'">
     <li [class.selected]="isSelected('/favorite')" class="page-body-text">
       <span>{{'FAVORITE' | translate}}</span>
     </li>
   </a>
 
-  <a *ngIf="isUserSignedIn()" [routerLink]="'/person-info'">
-    <li [class.selected]="isSelected('/person-info')" class="page-body-text">
-      <span>{{'PROFILE' | translate}}</span>
-    </li>
-  </a>
+
 
   <span class="fill-space"></span>
 

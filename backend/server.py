@@ -133,7 +133,6 @@ def getUserInfo():
                 return create_response_entity(message="User not found", status_code=404)
 
             user_data = {
-                "email": current_user.email,
                 "first_name": current_user.first_name,
                 "last_name": current_user.last_name
             }
@@ -170,6 +169,43 @@ def register():
         logger.error(f"Registration failed: {e}")
         return create_response_entity(message="Registration failed", error=str(e), status_code=500)
 
+@app.route('/api/v1/auth/invoke-refresh-token', methods=['POST'])
+def invoke_refresh_token():
+    logger.debug('User invoked refresh token endpoint')
+    try:
+        token = request.cookies.get('jwt')
+        if not token:
+            logger.debug('No JWT token found in cookies')
+            return create_response_entity(message="Authentication token is missing", status_code=401)
+
+        try:
+            decoded_token = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+            user_email = decoded_token.get("user_id")
+            if not user_email:
+                logger.debug('Invalid token payload')
+                return create_response_entity(message="Invalid token", status_code=401)
+
+            # Generate a new refresh token
+            refresh_token = jwt.encode(
+                {"user_id": user_email, "type": "refresh"},
+                app.config["SECRET_KEY"],
+                algorithm="HS256"
+            )
+
+            response = make_response(create_response_entity(message="Refresh token generated successfully", data=None, status_code=200))
+            response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True)
+            return response
+
+        except jwt.ExpiredSignatureError:
+            logger.debug('JWT token has expired')
+            return create_response_entity(message="Token has expired", status_code=401)
+        except jwt.InvalidTokenError:
+            logger.debug('Invalid JWT token')
+            return create_response_entity(message="Invalid token", status_code=401)
+
+    except Exception as e:
+        logger.error(f"Unexpected error generating refresh token: {e}")
+        return create_response_entity(message="Something went wrong", error=str(e), status_code=500)
 
 def parser_init() -> argparse.ArgumentParser:
     """
