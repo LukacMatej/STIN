@@ -15,8 +15,6 @@ class FinnhubClient:
             stock.setNews(json.dumps(news))
         return stocks
     
-
-    
 def parseStockSymbols(stocks: json) -> list[str]:
     parsed_stocks: list[sm.Stock] = []
     for stock in stocks:
