@@ -1,10 +1,11 @@
 <div *ngIf="stocks() as stocks" class="book-detail-container">
-
+  <app-filter (filter)="filterStocksWithColumnDef($event)"
+              [columns]="columns()">
+  </app-filter>
 <table>
   <thead>
     <tr>
       <th>{{ 'SYMBOL' | translate }}</th>
-      <th>{{ 'NAME' | translate }}</th>
       <th>{{ 'NEWS' | translate }}</th>
       <th>{{ 'NEWS_COUNTER' | translate }}</th>
       <th>{{ 'RATING' | translate }}</th>
@@ -14,11 +15,10 @@
   <tbody>
     <tr *ngFor="let stock of stocks">
       <td>{{ stock.symbol }}</td>
-      <td>{{ stock.name }}</td>
       <td>
         <select>
           <option *ngFor="let newsItem of stock.news" [value]="newsItem">
-            {{ newsItem | slice:0:30 }}{{ newsItem.length > 30 ? '...' : '' }}
+            {{ newsItem | slice:0:30 }}{{ newsItem.length > 100 ? '...' : '' }}
           </option>
         </select>
       </td>
@@ -28,3 +28,4 @@
     </tr>
   </tbody>
 </table>
+</div>

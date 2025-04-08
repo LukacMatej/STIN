@@ -124,5 +124,7 @@
   "NAME": "Name",
   "SYMBOL": "Symbol",
   "RATING": "Rating",
-  "RECOMMENDATION": "Recommendation"
+  "RECOMMENDATION": "Recommendation",
+  "SEARCH_NEWSCOUNTER": "Search news count lower bound",
+  "SEARCH_RATING": "Search rating lower bound"
 }

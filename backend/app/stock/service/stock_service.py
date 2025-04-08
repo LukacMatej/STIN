@@ -2,6 +2,7 @@ import finnhub
 import re
 import json
 from ..model import stock_model as sm
+from ..model import stock_filter_model as sfm
 from datetime import datetime, timedelta
 from ...logger.logger_conf import logger
 
@@ -14,8 +15,11 @@ class FinnhubClient:
         date_from = (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
         for stock in stocks:
             news: json = self.client.company_news(stock.symbol, _from=date_from, to=date_to)
+            news_count = len(news)  # Count the number of news items
             stock.setNews(json.dumps(news))
-            stock.setNewsCounter()
+            stock.setNewsCounter(news_count)
+            logger.debug(f"Stock {stock.symbol} has {news_count} news items.")
+            logger.info(f"Retrieved {news_count} news items for stock {stock.symbol}.")
         return stocks
     
 def parseStockSymbols(stocks: json) -> list[str]:
@@ -79,3 +83,53 @@ def prepareAnswer(stocks: list[sm.Stock]) -> str:
         ]
     }
     return json.dumps(response, indent=4)
+
+def applyRecommendationToStocks(stocks: list[sm.Stock], data: json) -> list[sm.Stock]:
+    try:
+        recommendations = {item["symbol"]: item["recommendation"] for item in data["stocks"]}
+        for stock in stocks:
+            if stock.symbol in recommendations:
+                stock.setRecommendation(recommendations[stock.symbol])
+            else:
+                logger.warning(f"Stock symbol {stock.symbol} not found in recommendation data. Setting recommendation to None.")
+                stock.setRecommendation(None)
+    except KeyError as e:
+        raise ValueError("Invalid data format: missing required keys") from e
+    except Exception as e:
+        raise ValueError("An error occurred while applying recommendations to stocks") from e
+    return stocks
+
+def recommendationBuySell(stocks: list[sm.Stock]) -> None:
+    try:
+        with open('transactions.txt', 'a') as file:
+            for stock in stocks:
+                date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                if stock.recommendation == "BUY":
+                    file.write(f"{date} - {stock.symbol}:BOUGHT\n")
+                    logger.info(f"Stock {stock.symbol} marked as BOUGHT on {date}.")
+                elif stock.recommendation == "SELL":
+                    file.write(f"{date} - {stock.symbol}:SOLD\n")
+                    logger.info(f"Stock {stock.symbol} marked as SOLD on {date}.")
+                else:
+                    file.write(f"{date} - {stock.symbol}:No action\n")
+                    logger.info(f"Stock {stock.symbol} has no actionable recommendation on {date}.")
+    except Exception as e:
+        logger.error("An error occurred while writing transactions to file.", exc_info=True)
+        raise
+    
+def filterStocks(stocks: list[sm.Stock], filterStockModel: sfm.StockFilterModel):
+    filtered_stocks = []
+    logger.debug(f"Filtering stocks with newsCounter: {filterStockModel.newsCounter}, rating: {filterStockModel.rating}")
+    for stock in stocks:
+        if filterStockModel.newsCounter and stock.newsCounter < int(filterStockModel.newsCounter.get('value', 0)):
+            continue
+        if filterStockModel.rating and stock.rating is not None:
+            try:
+                if float(stock.rating) < float(filterStockModel.rating.get('value', 0)):
+                    continue
+            except ValueError:
+                logger.error(f"Invalid rating value for stock {stock.symbol}: {stock.rating}")
+                continue
+        filtered_stocks.append(stock)
+    return filtered_stocks
+    
