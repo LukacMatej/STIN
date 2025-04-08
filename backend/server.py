@@ -6,6 +6,7 @@ from waitress import serve
 import os
 import jwt
 import json
+from datetime import datetime, timedelta, timezone
 
 from app.stock.service import stock_service as ss
 from app.genai.service import genai_service as gs
@@ -50,7 +51,7 @@ def evaluateStocks():
     stocks = client.getStockNews(parsed_stocks)
     ai_response: dict[str,int] = genai_client.evaluateText(stocks)
     stocks: list[sm.Stock] = ss.appplyRatingToStocks(stocks, ai_response)
-    ss.saveStocksToFile(stocks, filename='stocks_info.txt')
+    ss.saveStocksToFile(stocks)
     logger.debug('Stocks evaluated')
     answer = ss.prepareAnswer(stocks)
     logger.debug(answer)
@@ -88,6 +89,7 @@ def login():
                     "password": user.password,
                     "token": user.token,
                 }
+                user_dict["exp"] = datetime.now(tz=timezone.utc) + timedelta(days=1)
 
                 user_dict["token"] = jwt.encode(
                     {"user_id": user_dict["email"]},
@@ -150,6 +152,18 @@ def getUserInfo():
         logger.error(f"Unexpected error retrieving user info: {e}")
         return create_response_entity(message="Something went wrong", error=str(e), status_code=500)
 
+@app.route('/api/v1/stocks', methods=['GET'])
+def get_stocks():
+    logger.debug('User visited stocks page')
+    try:
+        stocks: list[sm.Stock] = ss.getStocks()
+        stocks_serializable = [stock.__dict__() for stock in stocks]  # Convert Stock objects to dictionaries
+        # logger.debug(f"Retrieved stocks: {stocks_serializable}")
+        return create_response_entity(message="Stocks retrieved successfully", data=stocks_serializable, status_code=200)
+    except Exception as e:
+        logger.error(f"Error retrieving stocks: {e}")
+        return create_response_entity(message="Error retrieving stocks", error=str(e), status_code=500)
+
 @app.route('/api/v1/auth/registration', methods=['POST'])
 def register():
     logger.debug('User visited registration page')
@@ -184,6 +198,7 @@ def invoke_refresh_token():
             if not user_email:
                 logger.debug('Invalid token payload')
                 return create_response_entity(message="Invalid token", status_code=401)
+            refresh_token['exp'] = datetime.now(tz=timezone.utc) + timedelta(seconds=3600)
 
             # Generate a new refresh token
             refresh_token = jwt.encode(

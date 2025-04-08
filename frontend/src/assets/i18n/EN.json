@@ -118,5 +118,11 @@
   "ORDER_NUMBER": "Order number",
   "ORDER_DATE": "Order date",
   "ORDER_LIST": "Order list",
-  "PORTFOLIO": "Portfolio"
+  "PORTFOLIO": "Portfolio",
+  "NEWS": "News",
+  "NEWS_COUNTER": "News count",
+  "NAME": "Name",
+  "SYMBOL": "Symbol",
+  "RATING": "Rating",
+  "RECOMMENDATION": "Recommendation"
 }

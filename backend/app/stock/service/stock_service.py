@@ -1,7 +1,9 @@
 import finnhub
+import re
 import json
 from ..model import stock_model as sm
 from datetime import datetime, timedelta
+from ...logger.logger_conf import logger
 
 class FinnhubClient:
     def __init__(self, api_key: str):
@@ -13,6 +15,7 @@ class FinnhubClient:
         for stock in stocks:
             news: json = self.client.company_news(stock.symbol, _from=date_from, to=date_to)
             stock.setNews(json.dumps(news))
+            stock.setNewsCounter()
         return stocks
     
 def parseStockSymbols(stocks: json) -> list[str]:
@@ -24,25 +27,46 @@ def parseStockSymbols(stocks: json) -> list[str]:
             raise ValueError("Invalid stock data: missing 'symbol' key")
     return parsed_stocks
 
-def appplyRatingToStocks(stocks: list[sm.Stock], response: dict[str,int]) -> list[sm.Stock]:
+def appplyRatingToStocks(stocks: list[sm.Stock], response: dict[str, int]) -> list[sm.Stock]:
     try:
         print(response)
         for stock in stocks:
             if stock.symbol in response.keys():
                 stock.setRating(response[stock.symbol])
             else:
-                raise ValueError(f"Stock symbol {stock.symbol} not found in response")
+                logger.warning(f"Stock symbol {stock.symbol} not found in response. Setting rating to None.")
+                stock.setRating(None)  # Explicitly set rating to None if not found
     except json.JSONDecodeError as e:
         raise ValueError("Invalid JSON response from AI") from e
     except Exception as e:
         raise ValueError("An error occurred while applying ratings to stocks") from e
     return stocks
 
-def saveStocksToFile(stocks: list[sm.Stock], filename: str = 'stocks_info.txt') -> None:
-    with open(filename, 'a') as file:
-        for stock in stocks:
-            file.write(f"{stock.symbol, stock.name, stock.news, stock.price, stock.rating}\n")
-    file.close()
+def saveStocksToFile(stocks: list[sm.Stock], filename: str = 'stocks_info.json') -> None:
+    with open(filename, 'w') as file: 
+        json.dump([stock.__dict__() for stock in stocks], file, indent=4)
+
+def getStocks(filename: str = 'stocks_info.json') -> list[sm.Stock]:
+    stocks: list[sm.Stock] = []
+    try:
+        with open(filename, 'r') as file:
+            stock_data_list = json.load(file)
+            for stock_data in stock_data_list:
+                stock = sm.Stock(
+                    symbol=stock_data['symbol'],
+                    name=stock_data.get('name', None),
+                    price=stock_data.get('price', None),
+                    news=json.dumps(stock_data.get('news', None)),
+                    rating=stock_data['rating'],
+                    newsCounter=stock_data.get('newsCounter', 0),
+                    recommendation=stock_data.get('recommendation', None)
+                )
+                stocks.append(stock)
+    except FileNotFoundError:
+        logger.warning(f"File {filename} not found. Returning an empty stock list.")
+    for stock in stocks:
+        logger.debug(f"Stock loaded: {stock.symbol}, Rating: {stock.rating}")
+    return stocks
     
 def prepareAnswer(stocks: list[sm.Stock]) -> str:
     response = {

@@ -118,5 +118,11 @@
   "ORDER_NUMBER": "Číslo objednávky",
   "ORDER_DATE": "Datum objednávky",
   "ORDER_LIST": "Seznam objednávky",
-  "PORTFOLIO": "Portfolio"
+  "PORTFOLIO": "Portfolio",
+  "NEWS": "Novinky",
+  "NEWS_COUNTER": "Počet novinek",
+  "NAME": "Název",
+  "SYMBOL": "Symbol",
+  "RATING": "Hodnocení",
+  "RECOMMENDATION": "Doporučení"
 }

@@ -1,0 +1,30 @@
+<div *ngIf="stocks() as stocks" class="book-detail-container">
+
+<table>
+  <thead>
+    <tr>
+      <th>{{ 'SYMBOL' | translate }}</th>
+      <th>{{ 'NAME' | translate }}</th>
+      <th>{{ 'NEWS' | translate }}</th>
+      <th>{{ 'NEWS_COUNTER' | translate }}</th>
+      <th>{{ 'RATING' | translate }}</th>
+      <th>{{ 'RECOMMENDATION' | translate }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let stock of stocks">
+      <td>{{ stock.symbol }}</td>
+      <td>{{ stock.name }}</td>
+      <td>
+        <select>
+          <option *ngFor="let newsItem of stock.news" [value]="newsItem">
+            {{ newsItem | slice:0:30 }}{{ newsItem.length > 30 ? '...' : '' }}
+          </option>
+        </select>
+      </td>
+      <td>{{ stock.newsCounter }}</td>
+      <td>{{ stock.rating }}</td>
+      <td>{{ stock.recommendation }}</td>
+    </tr>
+  </tbody>
+</table>
