@@ -240,7 +240,7 @@
         ],
         "rating": "-8",
         "newsCounter": 137372,
-        "recommendation": null
+        "recommendation": "SELL"
     },
     {
         "symbol": "GOOGL",
@@ -491,7 +491,7 @@
         ],
         "rating": "9",
         "newsCounter": 150563,
-        "recommendation": null
+        "recommendation": "BUY"
     },
     {
         "symbol": "AMZN",
@@ -739,7 +739,7 @@
         ],
         "rating": "-7",
         "newsCounter": 140350,
-        "recommendation": null
+        "recommendation": "None"
     },
     {
         "symbol": "TSLA",

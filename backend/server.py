@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, session, jsonify, request, make_response  # Import make_response for creating Flask Response objects
+from flask.wrappers import Response
 from flask_cors import CORS
 import argparse
-from google.genai.types import GenerateContentResponse
 from waitress import serve
 import os
 import jwt
@@ -19,22 +19,14 @@ from app.auth.entity.response_entity import create_response_entity
 from app.stock.model import stock_model as sm
 from app.auth.user.model import user_model as um
 
-import secrets
-
-
 app = Flask(__name__)
 
 CORS(app, supports_credentials=True, origins=["http://localhost:4200","https://stin-2025-app-frontend-11efe8067f8c.herokuapp.com"])
 
-app.secret_key = secrets.token_hex(16)
-
-@app.route('/')
-def index():
-    logger.debug('User visited home page')
-    return 'Hello, Flask!'
+app.secret_key = "my_static_secret_key_12345"
 
 @app.route('/evaluateStocks', methods=['POST'])	
-def evaluateStocks():
+def evaluateStocks() -> tuple[Response, int]:
     data = request.json
     if data is None:
         logger.debug('No data provided')
@@ -58,10 +50,36 @@ def evaluateStocks():
     answer_json = json.loads(answer)
     return create_response_entity(data=answer_json, status_code=200)
     
+@app.route('/recommendation', methods=['POST'])
+def recommendation() -> tuple[Response, int]:
+    data = request.json
+    if data is None:
+        logger.debug('No data provided')
+        return create_response_entity(message="No data provided", status_code=400)
+    if 'stocks' not in data:
+        logger.debug('No stocks provided')
+        return create_response_entity(message="No stocks provided", status_code=400)
+    logger.debug('User visited recommendation page')
+    stocks: list[sm.Stock] = ss.getStocks()
+    stocks = ss.applyRecommendationToStocks(stocks, data)
+    ss.saveStocksToFile(stocks)
+    ss.recommendationBuySell(stocks)
+    return create_response_entity(message="Recommendation applied", status_code=200)
+    
+@app.route('/api/v1/stocks', methods=['GET'])
+def get_stocks() -> tuple[Response, int]:
+    logger.debug('User visited stocks page')
+    try:
+        stocks: list[sm.Stock] = ss.getStocks()
+        stocks_serializable = [stock.__dict__() for stock in stocks]
+        return create_response_entity(message="Stocks retrieved successfully", data=stocks_serializable, status_code=200)
+    except Exception as e:
+        logger.error(f"Error retrieving stocks: {e}")
+        return create_response_entity(message="Error retrieving stocks", error=str(e), status_code=500)
+    
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():
     logger.debug('User logged out')
-    
     return create_response_entity(message="Logged out successfully", status_code=200)
 
 @app.route('/api/v1/auth/login', methods=['POST'])
@@ -151,18 +169,6 @@ def getUserInfo():
     except Exception as e:
         logger.error(f"Unexpected error retrieving user info: {e}")
         return create_response_entity(message="Something went wrong", error=str(e), status_code=500)
-
-@app.route('/api/v1/stocks', methods=['GET'])
-def get_stocks():
-    logger.debug('User visited stocks page')
-    try:
-        stocks: list[sm.Stock] = ss.getStocks()
-        stocks_serializable = [stock.__dict__() for stock in stocks]  # Convert Stock objects to dictionaries
-        # logger.debug(f"Retrieved stocks: {stocks_serializable}")
-        return create_response_entity(message="Stocks retrieved successfully", data=stocks_serializable, status_code=200)
-    except Exception as e:
-        logger.error(f"Error retrieving stocks: {e}")
-        return create_response_entity(message="Error retrieving stocks", error=str(e), status_code=500)
 
 @app.route('/api/v1/auth/registration', methods=['POST'])
 def register():
