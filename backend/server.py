@@ -17,6 +17,7 @@ from app.logger.logger_conf import logger
 from app.auth.token.jwt_token_service import token_required
 from app.auth.entity.response_entity import create_response_entity
 from app.stock.model import stock_model as sm
+from app.stock.model import stock_filter_model as sfm
 from app.auth.user.model import user_model as um
 
 app = Flask(__name__)
@@ -76,6 +77,27 @@ def get_stocks() -> tuple[Response, int]:
     except Exception as e:
         logger.error(f"Error retrieving stocks: {e}")
         return create_response_entity(message="Error retrieving stocks", error=str(e), status_code=500)
+    
+@app.route('/api/v1/stocks/filter', methods=['POST'])
+def filter_stocks():
+    data = request.json
+    logger.debug('User visited filter stocks page')
+    if not data:
+        logger.debug('No data provided for filtering')
+        return create_response_entity(message="No data provided", status_code=400)
+    try:
+        filterStockModel = sfm.StockFilterModel(**data)
+    except Exception as e:
+        logger.error(f"Error parsing filter model: {e}")
+        return create_response_entity(message="Invalid filter data", error=str(e), status_code=400)
+    try:
+        stocks: list[sm.Stock] = ss.getStocks()
+        stocks = ss.filterStocks(stocks, filterStockModel)
+        stocks_serializable = [stock.__dict__() for stock in stocks]
+        return create_response_entity(message="Stocks filtered successfully", data=stocks_serializable, status_code=200)
+    except Exception as e:
+        logger.error(f"Error filtering stocks: {e}")
+        return create_response_entity(message="Error filtering stocks", error=str(e), status_code=500)
     
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():

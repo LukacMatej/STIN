@@ -2,6 +2,7 @@ import finnhub
 import re
 import json
 from ..model import stock_model as sm
+from ..model import stock_filter_model as sfm
 from datetime import datetime, timedelta
 from ...logger.logger_conf import logger
 
@@ -14,8 +15,11 @@ class FinnhubClient:
         date_from = (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
         for stock in stocks:
             news: json = self.client.company_news(stock.symbol, _from=date_from, to=date_to)
+            news_count = len(news)  # Count the number of news items
             stock.setNews(json.dumps(news))
-            stock.setNewsCounter()
+            stock.setNewsCounter(news_count)
+            logger.debug(f"Stock {stock.symbol} has {news_count} news items.")
+            logger.info(f"Retrieved {news_count} news items for stock {stock.symbol}.")
         return stocks
     
 def parseStockSymbols(stocks: json) -> list[str]:
@@ -112,3 +116,20 @@ def recommendationBuySell(stocks: list[sm.Stock]) -> None:
     except Exception as e:
         logger.error("An error occurred while writing transactions to file.", exc_info=True)
         raise
+    
+def filterStocks(stocks: list[sm.Stock], filterStockModel: sfm.StockFilterModel):
+    filtered_stocks = []
+    logger.debug(f"Filtering stocks with newsCounter: {filterStockModel.newsCounter}, rating: {filterStockModel.rating}")
+    for stock in stocks:
+        if filterStockModel.newsCounter and stock.newsCounter < int(filterStockModel.newsCounter.get('value', 0)):
+            continue
+        if filterStockModel.rating and stock.rating is not None:
+            try:
+                if float(stock.rating) < float(filterStockModel.rating.get('value', 0)):
+                    continue
+            except ValueError:
+                logger.error(f"Invalid rating value for stock {stock.symbol}: {stock.rating}")
+                continue
+        filtered_stocks.append(stock)
+    return filtered_stocks
+    

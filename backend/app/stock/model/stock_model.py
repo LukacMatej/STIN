@@ -11,8 +11,8 @@ class Stock:
         self.newsCounter: int = newsCounter
         self.recommendation: str | None = recommendation
 
-    def setNewsCounter(self) -> None:
-        self.newsCounter = len(self.news) if self.news else 0
+    def setNewsCounter(self, newsCounter) -> None:
+        self.newsCounter = newsCounter
     def setRating(self, rating: float | None) -> None:
         self.rating = float(rating) if rating not in [None, ""] else None
     def setPrice(self, price: float) -> None:

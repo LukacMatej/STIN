@@ -124,5 +124,7 @@
   "NAME": "Název",
   "SYMBOL": "Symbol",
   "RATING": "Hodnocení",
-  "RECOMMENDATION": "Doporučení"
+  "RECOMMENDATION": "Doporučení",
+  "SEARCH_NEWSCOUNTER": "Spodní hranice novinek",
+  "SEARCH_RATING": "Spodní hranice hodnocení"
 }

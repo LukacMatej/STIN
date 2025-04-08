@@ -1,5 +1,7 @@
 <div *ngIf="stocks() as stocks" class="book-detail-container">
-
+  <app-filter (filter)="filterStocksWithColumnDef($event)"
+              [columns]="columns()">
+  </app-filter>
 <table>
   <thead>
     <tr>
@@ -26,3 +28,4 @@
     </tr>
   </tbody>
 </table>
+</div>
