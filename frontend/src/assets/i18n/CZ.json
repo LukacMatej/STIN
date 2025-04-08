@@ -117,5 +117,12 @@
   "SEARCH_CREATED_DATE_TIME": "Hledat datum vytvoření",
   "ORDER_NUMBER": "Číslo objednávky",
   "ORDER_DATE": "Datum objednávky",
-  "ORDER_LIST": "Seznam objednávky"
+  "ORDER_LIST": "Seznam objednávky",
+  "PORTFOLIO": "Portfolio",
+  "NEWS": "Novinky",
+  "NEWS_COUNTER": "Počet novinek",
+  "NAME": "Název",
+  "SYMBOL": "Symbol",
+  "RATING": "Hodnocení",
+  "RECOMMENDATION": "Doporučení"
 }

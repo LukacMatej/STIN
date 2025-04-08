@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, session, jsonify, request
+from flask import Flask, redirect, url_for, session, jsonify, request, make_response  # Import make_response for creating Flask Response objects
 from flask_cors import CORS
 import argparse
 from google.genai.types import GenerateContentResponse
@@ -6,6 +6,7 @@ from waitress import serve
 import os
 import jwt
 import json
+from datetime import datetime, timedelta, timezone
 
 from app.stock.service import stock_service as ss
 from app.genai.service import genai_service as gs
@@ -16,13 +17,14 @@ from app.logger.logger_conf import logger
 from app.auth.token.jwt_token_service import token_required
 from app.auth.entity.response_entity import create_response_entity
 from app.stock.model import stock_model as sm
+from app.auth.user.model import user_model as um
 
 import secrets
 
 
 app = Flask(__name__)
 
-CORS(app, supports_credentials=True, origins=["http://localhost:3000","https://stin-2025-app-frontend-11efe8067f8c.herokuapp.com"])
+CORS(app, supports_credentials=True, origins=["http://localhost:4200","https://stin-2025-app-frontend-11efe8067f8c.herokuapp.com"])
 
 app.secret_key = secrets.token_hex(16)
 
@@ -49,7 +51,7 @@ def evaluateStocks():
     stocks = client.getStockNews(parsed_stocks)
     ai_response: dict[str,int] = genai_client.evaluateText(stocks)
     stocks: list[sm.Stock] = ss.appplyRatingToStocks(stocks, ai_response)
-    ss.saveStocksToFile(stocks, filename='stocks_info.txt')
+    ss.saveStocksToFile(stocks)
     logger.debug('Stocks evaluated')
     answer = ss.prepareAnswer(stocks)
     logger.debug(answer)
@@ -59,10 +61,8 @@ def evaluateStocks():
 @app.route('/api/v1/auth/logout', methods=['POST'])
 def logout():
     logger.debug('User logged out')
-    session.pop('auth', None)
-    session.pop('id', None)
-    session.pop('username', None)
-    return create_response_entity(message="Logged out", status_code=200)
+    
+    return create_response_entity(message="Logged out successfully", status_code=200)
 
 @app.route('/api/v1/auth/login', methods=['POST'])
 def login():
@@ -89,13 +89,17 @@ def login():
                     "password": user.password,
                     "token": user.token,
                 }
+                user_dict["exp"] = datetime.now(tz=timezone.utc) + timedelta(days=1)
 
                 user_dict["token"] = jwt.encode(
                     {"user_id": user_dict["email"]},
                     app.config["SECRET_KEY"],
                     algorithm="HS256"
                 )
-                return create_response_entity(message="Successfully fetched auth token", data=user_dict, status_code=200)  # Explicit 200
+
+                response = make_response(create_response_entity(message="Successfully fetched auth token", data={"email": user.email}, status_code=200))
+                response.set_cookie('jwt', user_dict["token"], httponly=True, secure=True)
+                return response
 
             except Exception as e:
                 return create_response_entity(message=str(e), error="Something went wrong", status_code=500)
@@ -108,6 +112,57 @@ def login():
 @token_required
 def get_current_user(current_user):
     return create_response_entity(message="Successfully retrieved user profile", data=current_user)
+
+@app.route('/api/v1/auth/user', methods=['GET'])
+def getUserInfo():
+    logger.debug('User visited user info page')
+    try:
+        token = request.cookies.get('jwt')  # Retrieve JWT from cookies
+        if not token:
+            logger.debug('No JWT token found in cookies')
+            return create_response_entity(message="Authentication token is missing", status_code=401)
+
+        try:
+            decoded_token = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+            user_email = decoded_token.get("user_id")
+            if not user_email:
+                logger.debug('Invalid token payload')
+                return create_response_entity(message="Invalid token", status_code=401)
+
+            current_user: um.UserModel | None = auth_service.getUserByEmail(user_email)
+            if not current_user:
+                logger.debug('No user found for the given email')
+                return create_response_entity(message="User not found", status_code=404)
+
+            user_data = {
+                "first_name": current_user.first_name,
+                "last_name": current_user.last_name
+            }
+            logger.debug(f"Retrieved user info: {user_data}")
+            return create_response_entity(message="User info retrieved successfully", data=user_data, status_code=200)
+
+        except jwt.ExpiredSignatureError:
+            logger.debug('JWT token has expired')
+            return create_response_entity(message="Token has expired", status_code=401)
+        except jwt.InvalidTokenError:
+            logger.debug('Invalid JWT token')
+            return create_response_entity(message="Invalid token", status_code=401)
+
+    except Exception as e:
+        logger.error(f"Unexpected error retrieving user info: {e}")
+        return create_response_entity(message="Something went wrong", error=str(e), status_code=500)
+
+@app.route('/api/v1/stocks', methods=['GET'])
+def get_stocks():
+    logger.debug('User visited stocks page')
+    try:
+        stocks: list[sm.Stock] = ss.getStocks()
+        stocks_serializable = [stock.__dict__() for stock in stocks]  # Convert Stock objects to dictionaries
+        # logger.debug(f"Retrieved stocks: {stocks_serializable}")
+        return create_response_entity(message="Stocks retrieved successfully", data=stocks_serializable, status_code=200)
+    except Exception as e:
+        logger.error(f"Error retrieving stocks: {e}")
+        return create_response_entity(message="Error retrieving stocks", error=str(e), status_code=500)
 
 @app.route('/api/v1/auth/registration', methods=['POST'])
 def register():
@@ -128,6 +183,44 @@ def register():
         logger.error(f"Registration failed: {e}")
         return create_response_entity(message="Registration failed", error=str(e), status_code=500)
 
+@app.route('/api/v1/auth/invoke-refresh-token', methods=['POST'])
+def invoke_refresh_token():
+    logger.debug('User invoked refresh token endpoint')
+    try:
+        token = request.cookies.get('jwt')
+        if not token:
+            logger.debug('No JWT token found in cookies')
+            return create_response_entity(message="Authentication token is missing", status_code=401)
+
+        try:
+            decoded_token = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+            user_email = decoded_token.get("user_id")
+            if not user_email:
+                logger.debug('Invalid token payload')
+                return create_response_entity(message="Invalid token", status_code=401)
+            refresh_token['exp'] = datetime.now(tz=timezone.utc) + timedelta(seconds=3600)
+
+            # Generate a new refresh token
+            refresh_token = jwt.encode(
+                {"user_id": user_email, "type": "refresh"},
+                app.config["SECRET_KEY"],
+                algorithm="HS256"
+            )
+
+            response = make_response(create_response_entity(message="Refresh token generated successfully", data=None, status_code=200))
+            response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True)
+            return response
+
+        except jwt.ExpiredSignatureError:
+            logger.debug('JWT token has expired')
+            return create_response_entity(message="Token has expired", status_code=401)
+        except jwt.InvalidTokenError:
+            logger.debug('Invalid JWT token')
+            return create_response_entity(message="Invalid token", status_code=401)
+
+    except Exception as e:
+        logger.error(f"Unexpected error generating refresh token: {e}")
+        return create_response_entity(message="Something went wrong", error=str(e), status_code=500)
 
 def parser_init() -> argparse.ArgumentParser:
     """

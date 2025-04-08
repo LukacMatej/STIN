@@ -117,5 +117,12 @@
   "SEARCH_CREATED_DATE_TIME": "Search created date",
   "ORDER_NUMBER": "Order number",
   "ORDER_DATE": "Order date",
-  "ORDER_LIST": "Order list"
+  "ORDER_LIST": "Order list",
+  "PORTFOLIO": "Portfolio",
+  "NEWS": "News",
+  "NEWS_COUNTER": "News count",
+  "NAME": "Name",
+  "SYMBOL": "Symbol",
+  "RATING": "Rating",
+  "RECOMMENDATION": "Recommendation"
 }

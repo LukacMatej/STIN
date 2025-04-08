@@ -3,12 +3,12 @@ import {RouterModule, Routes} from '@angular/router'
 
 import {SignInComponent} from './auth/sign-in/components/sign-in.component'
 import {SignUpComponent} from './auth/sing-up/components/sign-up.component'
-import {PersonInfoComponent} from './person-info/components/person-info.component'
+import {PortfolioComponent} from './portfolio/components/portfolio.component'
 
 const routes: Routes = [
   {path: 'sign-in', component: SignInComponent},
   {path: 'sign-up', component: SignUpComponent},
-  {path: 'person-info', component: PersonInfoComponent},
+  {path: 'portfolio', component: PortfolioComponent},
   {path: '**', redirectTo: ''}
 
 ]
