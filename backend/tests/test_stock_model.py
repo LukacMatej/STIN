@@ -1,6 +1,7 @@
-from backend.app.stock.model.stock_model import Stock
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from app.stock.model.stock_model import Stock
+import pytest
 
 def test_stock_initialization():
     """Test the initialization of Stock."""
