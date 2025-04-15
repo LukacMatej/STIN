@@ -2,7 +2,7 @@ import pytest
 import json
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # Add backend to PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from server import app
 from app.stock.model.stock_model import Stock
 from app.auth.sign_in.model.sign_in_model import SignInModel
