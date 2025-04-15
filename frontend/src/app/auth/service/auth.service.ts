@@ -74,10 +74,6 @@ export class AuthService {
     return sessionStorage.getItem('auth') === 'true'
   }
 
-  invokeRefreshToken() {
-    return this.httpService.post(`${this.rootHttpUrl}invoke-refresh-token`, null)
-  }
-
   /**
    * Private method to set the 'auth' session key to 'true' upon successful sign-in.
    */

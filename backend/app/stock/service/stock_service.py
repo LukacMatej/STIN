@@ -33,18 +33,17 @@ def parseStockSymbols(stocks: json) -> list[str]:
 
 def appplyRatingToStocks(stocks: list[sm.Stock], response: dict[str, int]) -> list[sm.Stock]:
     try:
-        print(response)
         for stock in stocks:
             if stock.symbol in response.keys():
                 stock.setRating(response[stock.symbol])
             else:
                 logger.warning(f"Stock symbol {stock.symbol} not found in response. Setting rating to None.")
-                stock.setRating(None)  # Explicitly set rating to None if not found
+                stock.setRating(None)
+        return stocks
     except json.JSONDecodeError as e:
         raise ValueError("Invalid JSON response from AI") from e
     except Exception as e:
         raise ValueError("An error occurred while applying ratings to stocks") from e
-    return stocks
 
 def saveStocksToFile(stocks: list[sm.Stock], filename: str = 'stocks_info.json') -> None:
     with open(filename, 'w') as file: 
@@ -132,4 +131,3 @@ def filterStocks(stocks: list[sm.Stock], filterStockModel: sfm.StockFilterModel)
                 continue
         filtered_stocks.append(stock)
     return filtered_stocks
-    
