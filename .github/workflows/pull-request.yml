@@ -46,7 +46,7 @@ jobs:
         run: docker-compose exec -T backend pip install pytest pytest-cov flask-testing pytest-mock
 
       - name: Run tests and collect coverage in backend container
-        run: docker-compose exec -T backend pytest --cov=./ --cov-report=xml:/backend/coverage-service.xml
+        run: docker-compose exec -T backend pytest /tests --cov=. --cov-report=xml:/backend/coverage-service.xml
 
       - name: Copy backend coverage report
         run: docker cp backend:/backend/coverage-service.xml backend/
