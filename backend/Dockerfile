@@ -14,6 +14,7 @@ ADD server.py /
 ADD tests/ /tests
 ADD users.txt /
 ADD stocks_info.json /
+ADD .coverage /
 ADD transactions.txt /
 RUN chmod -R 777 /users.txt
 EXPOSE 8000
