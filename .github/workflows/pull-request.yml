@@ -20,6 +20,9 @@ jobs:
   build-and-test:
     name: Build and test backend & frontend
     runs-on: ubuntu-latest
+    container:
+      image: docker:20.10.7
+      options: --user root --privileged --network host
     env:
       LISTEN_ADDRESS: "0.0.0.0"
       HTTP_PORT: "8000"
@@ -53,6 +56,9 @@ jobs:
         run: |
           docker-compose exec -T backend pip install coverage
           docker-compose exec -T backend coverage xml -o /tmp/cobertura-coverage.xml
+          docker-compose exec -T backend ls -l /tmp/
+          docker-compose exec -T backend ls -l /
+          docker-compose exec -T backend ls -l ./tests
 
       - name: Copy backend Cobertura coverage report
         run: |
