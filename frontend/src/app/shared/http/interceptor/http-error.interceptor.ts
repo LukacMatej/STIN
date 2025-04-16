@@ -19,14 +19,12 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status == 401) {
-          this.authService.invokeRefreshToken().subscribe({
             error: () => {
               this.authService.signOut()
               this.notificationService.errorNotification('You do not have access to this feature, please login')
               sessionStorage.removeItem('auth')
               this.router.navigate(['/sign-in'])
             }
-          })
         }
         return throwError(() => error)
       })

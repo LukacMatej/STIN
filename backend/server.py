@@ -148,22 +148,21 @@ def login():
     except Exception as e:
         return create_response_entity(message="Something went wrong!", error=str(e), data=None, status_code=500)
 
-@app.route("/users/", methods=["GET"])
-@token_required
-def get_current_user(current_user):
-    return create_response_entity(message="Successfully retrieved user profile", data=current_user)
+
 
 @app.route('/api/v1/auth/user', methods=['GET'])
 def getUserInfo():
     logger.debug('User visited user info page')
     try:
         token = request.cookies.get('jwt')  # Retrieve JWT from cookies
+        logger.debug(f"JWT token retrieved: {token}")
         if not token:
             logger.debug('No JWT token found in cookies')
             return create_response_entity(message="Authentication token is missing", status_code=401)
 
         try:
             decoded_token = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+            logger.debug(f"Decoded JWT token: {decoded_token}")
             user_email = decoded_token.get("user_id")
             if not user_email:
                 logger.debug('Invalid token payload')
@@ -211,44 +210,16 @@ def register():
         logger.error(f"Registration failed: {e}")
         return create_response_entity(message="Registration failed", error=str(e), status_code=500)
 
-@app.route('/api/v1/auth/invoke-refresh-token', methods=['POST'])
-def invoke_refresh_token():
-    logger.debug('User invoked refresh token endpoint')
-    try:
-        token = request.cookies.get('jwt')
-        if not token:
-            logger.debug('No JWT token found in cookies')
-            return create_response_entity(message="Authentication token is missing", status_code=401)
+@app.route('/getStock', methods=['GET'])
+def getStockNews():
+    finnhub_api_key = os.environ.get('FINNHUB_API_KEY')
+    genai_api_key = os.environ.get('GEN_AI_KEY')
+    client = ss.FinnhubClient(finnhub_api_key)
+    genai_client = gs.genaiClient(genai_api_key)
 
-        try:
-            decoded_token = jwt.decode(token, app.secret_key, algorithms=["HS256"])
-            user_email = decoded_token.get("user_id")
-            if not user_email:
-                logger.debug('Invalid token payload')
-                return create_response_entity(message="Invalid token", status_code=401)
-            refresh_token['exp'] = datetime.now(tz=timezone.utc) + timedelta(seconds=3600)
-
-            # Generate a new refresh token
-            refresh_token = jwt.encode(
-                {"user_id": user_email, "type": "refresh"},
-                app.config["SECRET_KEY"],
-                algorithm="HS256"
-            )
-
-            response = make_response(create_response_entity(message="Refresh token generated successfully", data=None, status_code=200))
-            response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True)
-            return response
-
-        except jwt.ExpiredSignatureError:
-            logger.debug('JWT token has expired')
-            return create_response_entity(message="Token has expired", status_code=401)
-        except jwt.InvalidTokenError:
-            logger.debug('Invalid JWT token')
-            return create_response_entity(message="Invalid token", status_code=401)
-
-    except Exception as e:
-        logger.error(f"Unexpected error generating refresh token: {e}")
-        return create_response_entity(message="Something went wrong", error=str(e), status_code=500)
+    stocks = client.getStockNews()
+    ai_response = genai_client.evaluateText(stocks)
+    return jsonify(ai_response), 200
 
 def parser_init() -> argparse.ArgumentParser:
     """

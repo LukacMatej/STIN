@@ -56,9 +56,9 @@ export class PortfolioComponent implements OnInit {
       }
     })
     this.columns.set([
-      new ColumnDefModel('SEARCH_RATING', 'rating', 'string',
+      new ColumnDefModel('rating', 'rating', 'string',
         new FilterCriteriaModel(FilterOperatorEnum.ILIKE, this.stockFilter.rating?.value)),
-      new ColumnDefModel('SEARCH_NEWSCOUNTER', 'newsCounter', 'string',
+      new ColumnDefModel('newsCounter', 'newsCounter', 'string',
         new FilterCriteriaModel(FilterOperatorEnum.ILIKE, this.stockFilter.newsCounter?.value)),
     ])
     console.log(this.stocks())
