@@ -40,4 +40,13 @@ export class NotificationService {
       toast: true
     })
   }
+
+  /**
+   * Logs a notification message to the console.
+   *
+   * @param message
+   */
+  notify(message: string): void {
+    console.log(message); // Replace with actual notification logic
+  }
 }
