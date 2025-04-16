@@ -58,6 +58,12 @@ jobs:
         run: |
           docker cp backend:/tmp/cobertura-coverage.xml backend/.coverage.xml
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: backend/.coverage.xml
+          name: backend-coverage-report
+
       - name: Upload backend coverage report to Codecov
         uses: codecov/codecov-action@v5
         with:
