@@ -42,21 +42,24 @@ jobs:
           docker-compose up -d
           docker ps
 
-      # - name: Install pytest in backend container
-      #   run: docker-compose exec -T backend pip install pytest pytest-cov flask-testing pytest-mock
+      - name: Install pytest in backend container
+        run: docker-compose exec -T backend pip install pytest pytest-cov flask-testing pytest-mock
 
-      # - name: Run tests and collect coverage in backend container
-      #   run: docker-compose exec -T backend pytest /tests --cov --cov-report=xml:/backend/coverage-service.xml
+      - name: Run tests and collect coverage in backend container
+        run: docker-compose exec -T backend pytest /tests --cov --cov-report=xml:/backend/coverage-service.xml
 
-      # - name: Copy backend coverage report
-      #   run: docker cp backend:/backend/coverage-service.xml backend/
+      - name: Copy backend coverage report
+        run: docker cp backend:/backend/coverage-service.xml backend/ |
+          ls -la backend/
+          cat backend/coverage-service.xml
+
 
       - name: Upload backend coverage report to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: backend
-          files: backend/.coverage.xml
+          files: backend/coverage-service.xml
 
       - name: Run frontend tests
         run: |
