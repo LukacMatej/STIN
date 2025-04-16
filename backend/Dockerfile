@@ -6,7 +6,7 @@ RUN apt update && apt install -y \
 
 COPY requirements.txt /
 RUN pip3 install -r requirements.txt 
-RUN pip install pytest pytest-cov
+RUN pip install pytest pytest-cov flask-testing pytest-mock
 
 WORKDIR /
 ADD app/ /app
