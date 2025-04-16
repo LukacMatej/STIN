@@ -51,7 +51,7 @@ jobs:
 
       - name: Copy backend coverage report
         run: |
-          docker cp backend:./.coverage.xml backend/
+          docker cp backend:.coverage.xml backend/
 
       - name: Upload backend coverage report to Codecov
         uses: codecov/codecov-action@v5
