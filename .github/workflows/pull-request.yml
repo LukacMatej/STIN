@@ -46,7 +46,7 @@ jobs:
         run: docker-compose exec -T backend pip install pytest pytest-cov flask-testing pytest-mock
 
       - name: Run tests and collect coverage in backend container
-        run: docker-compose exec -T backend pytest --cov --junitxml=junit.xml -o junit_family=legacy
+        run: docker-compose exec -T backend pytest /tests --cov --junitxml=junit.xml -o junit_family=legacy
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
