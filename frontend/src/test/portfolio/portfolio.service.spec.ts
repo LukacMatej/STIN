@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { PortfolioService } from '../app/portfolio/service/portfolio.service';
-import { BASE_API_URL } from '../config';
+import { PortfolioService } from '../../app/portfolio/service/portfolio.service';
+import { BASE_API_URL } from '../../config';
 
 describe('PortfolioService', () => {
   let service: PortfolioService;

@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { AuthService } from '../app/auth/service/auth.service';
-import { BASE_API_URL } from '../config';
-import { SignInModel } from '../app/auth/sign-in/model/sign-in.model';
-import { SignUpModel } from '../app/auth/sing-up/model/sign-up.model';
+import { AuthService } from '../../app/auth/service/auth.service';
+import { BASE_API_URL } from '../../config';
+import { SignInModel } from '../../app/auth/sign-in/model/sign-in.model';
+import { SignUpModel } from '../../app/auth/sing-up/model/sign-up.model';
 
 describe('AuthService', () => {
   let service: AuthService;
