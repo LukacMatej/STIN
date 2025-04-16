@@ -45,34 +45,16 @@ jobs:
       - name: Install pytest in backend container
         run: docker-compose exec -T backend pip install pytest pytest-cov flask-testing pytest-mock
 
-      - name: Run backend tests
+      - name: Run tests and collect coverage
+        run: pytest --cov ./tests
+      - name: Upload coverage reports to Codecov
         run: |
-          docker-compose exec -T backend pytest ./tests --cov=. --cov-report=xml:/tmp/coverage.xml --cov-report=term-missing
-
-      - name: Convert backend coverage report to Cobertura format
-        run: |
-          docker-compose exec -T backend pip install coverage
-          docker-compose exec -T backend coverage xml -o /tmp/cobertura-coverage.xml
-          docker-compose exec -T backend ls -l /tmp/
-          docker-compose exec -T backend ls -l /
-          docker-compose exec -T backend ls -l ./tests
-
-      - name: Copy backend Cobertura coverage report
-        run: |
-          docker cp backend:/tmp/cobertura-coverage.xml backend/.coverage.xml
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          path: backend/.coverage.xml
-          name: backend-coverage-report
-
-      - name: Upload backend coverage report to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: backend
-          files: backend/.coverage.xml
+          # Replace `linux` below with the appropriate OS
+          # Options are `alpine`, `linux`, `macos`, `windows`
+          curl -Os https://cli.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f coverage-service.xml
+  
 
       - name: Run frontend tests
         run: |
